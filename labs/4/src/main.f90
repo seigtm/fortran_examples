@@ -6,6 +6,11 @@
 ! по формуле трапеций:
 !  I = Integral(f(x)dx) ~ h[ f(a)/2 + f(a+h) + f(a+2h) + ... + f(b-h) + f(b)/2 ].
 
+! Указания: Сперва вычислить все необходимые точки интерполяции
+!  (для гарантированной векторизации).
+! После провести вычисление функции в этих точках.
+! Sum, использовать встроенные элементные функции.
+
 program Integral
    use Environment
    use Trapezoidal_Rule
@@ -26,8 +31,5 @@ program Integral
    allocate(X(N))
    ! Вызываем нашу чистую подпрограмму.
    call Integrate(a, b, h, X, I)
-   ! Альтернативный вариант с вызовом чистой функции.
-   ! В этом случае массив не нужен.
-   ! i = IntegrateImp(a, b, h)
    call Output_Integral(OUTPUT_FILE, I)
 end program Integral
