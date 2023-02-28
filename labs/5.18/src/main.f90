@@ -18,20 +18,31 @@ program Sampling
    ! use Sampling_IO
    implicit none
 
-   character(*), parameter :: INPUT_FILE  = "../data/input.txt", OUTPUT_FILE = "output.txt"
+   character(*), parameter  :: INPUT_FILE  = "../data/input.txt", OUTPUT_FILE = "output.txt"
    ! p и q - заданные значения, по которым будет осуществляться выборка.
    ! N - количество первых значений выборки, по которым будет находиться среднее арифметическое.
-   integer(I_), parameter  :: p = 1, q = 5, N = 5
+   integer(I_), parameter   :: p = 3, q = 5, N = 6
    ! Исходный массив.
-   integer(I_), parameter  :: A(*) = (/8, 8, 1, 2, 3, 4, 5, 8, 8/)
+   integer(I_), allocatable :: A(:)
    ! Выборка элементов массива A, удовлетворяющая условию p <= ai <= q.
-   integer(I_), parameter  :: GoodA(*) = pack(A, p <= A .and. A <= q)
+   integer(I_), allocatable :: GoodA(:)
+   integer(I_)              :: In, Out, sizeA
 
-   ! Если в выборке менее N чисел.
-   if(size(GoodA) < N) then
-      write(*,*) "В выборке менее "// N //" чисел."
-   else
-      write(*,*) sum(GoodA(1:N)) / real(N, R_)  ! Вычисляем среднее арифметическое.
-   end if
+   open(file=INPUT_FILE, newunit=In)
+      read(In, *) sizeA
+      allocate(A(sizeA))
+      read(In, *) A
+   close(In)
+
+   GoodA = pack(A, p <= A .and. A <= q)
+
+   open(file=OUTPUT_FILE, encoding=E_, newunit=Out, position="rewind")
+      ! Если в выборке менее N чисел.
+      if(size(GoodA) < N) then
+         write(Out, *) "В выборке менее "// N //" чисел."
+      else
+         write(Out, *) sum(GoodA(1:N)) / real(N, R_)  ! Вычисляем среднее арифметическое.
+      end if
+   close(Out)
 
 end program Sampling
