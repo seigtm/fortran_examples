@@ -12,16 +12,26 @@
 
 program Sampling
    use Environment
+   ! TODO: перенеси обработку и ввод/вывод в отдельные модули.
+   !       ввод/вывод осуществляй из файла, как обычно.
    ! use Sampling_Mod
    ! use Sampling_IO
    implicit none
 
-   character(*), parameter   :: INPUT_FILE  = "../data/input.txt", &
-                                OUTPUT_FILE = "output.txt"
-   integer(I_), parameter :: p = 1, q = 5
-   integer(I_), parameter :: A(*) = (/1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 1, 2/)
-   logical,     parameter :: Pos(*) = p <= A .and. A <= q
+   character(*), parameter :: INPUT_FILE  = "../data/input.txt", OUTPUT_FILE = "output.txt"
+   ! p и q - заданные значения, по которым будет осуществляться выборка.
+   ! N - количество первых значений выборки, по которым будет находиться среднее арифметическое.
+   integer(I_), parameter  :: p = 1, q = 5, N = 5
+   ! Исходный массив.
+   integer(I_), parameter  :: A(*) = (/8, 8, 1, 2, 3, 4, 5, 8, 8/)
+   ! Выборка элементов массива A, удовлетворяющая условию p <= ai <= q.
+   integer(I_), parameter  :: GoodA(*) = pack(A, p <= A .and. A <= q)
 
-   write(*, *) Pos
+   ! Если в выборке менее N чисел.
+   if(size(GoodA) < N) then
+      write(*,*) "В выборке менее "// N //" чисел."
+   else
+      write(*,*) sum(GoodA(1:N)) / real(N, R_)  ! Вычисляем среднее арифметическое.
+   end if
 
 end program Sampling
