@@ -1,3 +1,7 @@
+! Вычисляем значение функции:
+!  F = 1 + 1 / Sin(X),
+!  для X = [x1,x2] с шагом h.
+
 program exercise_4
    use Environment
    
