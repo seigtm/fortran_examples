@@ -1,6 +1,8 @@
+! Сумма элементов квадратной матрицы выше главной диагонали.
+
 program exercise_7_14a
    use Environment
-   
+
    implicit none
    character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
    integer                 :: In = 0, Out = 0, N = 0, i = 0
@@ -8,12 +10,13 @@ program exercise_7_14a
    real(R_)                :: s = 0
 
    open (file=input_file, newunit=In)
-      read (In, *) N
-      allocate (Z(N, N))
-      read (In, *) (Z(i, :), i = 1, N)
+      read (In, *) N                   ! Считываем размер квадратной матрицы (NxN).
+      allocate (Z(N, N))               ! Выделяем память для квадратной матрицы.
+      read (In, *) (Z(i, :), i = 1, N) ! Считываем квадратную матрицу. Хранение в памяти по столбцам.
    close (In)
 
    open (file=output_file, encoding=E_, newunit=Out)
+      ! Выводим квадратную матрицу в файл.
       write (Out, '('//N//'f6.2)') (Z(i, :), i = 1, N)
    close (Out)
 
@@ -21,10 +24,13 @@ program exercise_7_14a
 
    ! Размещение массивов в НАЧАЛЕ работы программы,
    ! а не внутри процедур при КАЖДОМ их вызове.
+   ! Вылеляем памяти для N-1 элементов массива Sums
+   !  и инициализируем их нулями.
    allocate(Sums(N-1), source=0._R_)
    call UpperSum(Z, Sums, s)
 
    open (file=output_file, encoding=E_, newunit=Out, position='append')
+      ! Выводим сумму элементов выше главной диагонали матрицы.
       write (Out, '(a, T5, "= ", f9.6)') "Sum", s
    close (Out)
 
@@ -34,15 +40,15 @@ contains
       real(R_)    s, Z(:, :)
       intent(in)  Z
       integer     i, j
-      
+
       ! Проход по столбцам -- как расположена матрица в памяти.
       s = 0
       do j = 2, N
          do i = 1, j-1
-               s = s + Z(i, j)
+            s = s + Z(i, j)
          end do
       end do
-      
+
       ! Так лучше не делать -- вводятся избыточные итерации и проверки:
       !do j = 1, N
       !   do i = 1, N
@@ -59,15 +65,15 @@ contains
       intent(in)     Z
       intent(inout)  Sums, s
       integer        j
-      
+
       ! Суммирование НЕПОЛНЫХ столбцов, расположенных выше главной диагонали
       ! для возможности векторизации.
       do concurrent (j = 2:N)
-      !do concurrent (integer :: j = 2:N)
-         Sums(1:j-1) = Sums(1:j-1) + Z(1:j-1, j) ! ВЕКТОРИЗЯЦИЯ.
+         !do concurrent (integer :: j = 2:N)
+         Sums(1:j-1) = Sums(1:j-1) + Z(1:j-1, j) ! ВЕКТОРИЗАЦИЯ.
       end do
       s = Sum(Sums)
-      
+
       ! Так лучше не делать -- нерегулярное обращение к элементам матрицы в Sum.
       ! ! Формирование матрицы-маски, где верхняя треугольная матрица истина.
       ! ! allocate (Upper(N, N))

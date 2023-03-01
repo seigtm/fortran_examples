@@ -1,3 +1,7 @@
+! Сортировка отрицательных элементов массива.
+! Было:  1.00 -1.10  0.00 -3.30 -6.40  3.20 -2.00  5.50.
+! Стало: 1.00 -6.40  0.00 -3.30 -2.00  3.20 -1.10  5.50.
+
 program exercise_7_5a
    use Environment
 
@@ -16,19 +20,20 @@ program exercise_7_5a
    open (file=output_file, encoding=E_, newunit=Out)
       write (Out, "("//M//"f6.2)") A
    close (Out)
- 
+
    ! Проверять знак числа при сортировке очень дорого,
    ! поэтому в отдельный массив помещаются отрицательные числа и сортируются.
-   
+
    ! Размещаем массивы в НАЧАЛЕ работы программы,
    ! а не внутри процедур при КАЖДОМ их вызове.
    ! Формируем маску для отрицательных эелементов.
+   ! Source позволяет проинициализировать элементы выделяемого массива.
    allocate(Neg(M), source = .false.)
    allocate(Negatives(M))
-   
+
    !call SortNegativesImp(A, Neg, Negatives)
    call SortNegatives(A, Neg, Negatives)
-  
+
    open (file=output_file, encoding=E_, newunit=Out, position='append')
       write (Out, "(/"//M//"f6.2)") A
    close (Out)

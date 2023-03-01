@@ -1,6 +1,23 @@
+! Поиск совпавших строк.
+
+! Ввод:
+!  1.00 1.10 2.20 3.30
+!  4.70 3.10 4.40 5.50
+!  1.00 1.10 2.20 3.30
+!  4.70 3.10 4.40 5.50
+! -6.40 3.20 6.20 5.50
+!  1.00 1.10 2.20 3.30
+!  4.70 3.10 4.40 5.50
+!  0.20 9.30 7.20 3.20
+!  4.70 3.10 4.40 5.50
+
+! Вывод:
+!  1 3 6
+!  2 4 7 9
+
 program exercise_7_25
    use Environment
-   
+
    implicit none
    character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
    integer                 :: In = 0, Out = 0, N = 0, M = 0, i = 0, K = 0
@@ -17,14 +34,14 @@ program exercise_7_25
       allocate (A(M, N))
       read (In, *) A
    close (In)
-   
+
    ! Вывод данных.
    open (file=output_file, encoding=E_, position='rewind', newunit=Out)
-       write (Out, '('//M//'f6.2)') A
+      write (Out, '('//M//'f6.2)') A
    close (Out)
 
    Ind = [(i, i = 1, N)]
-  
+
 
    ! Размещение массивов данных в НАЧАЛЕ работы программы,
    ! а не внутри процедур при КАЖДОМ их вызове.
@@ -48,14 +65,14 @@ program exercise_7_25
    ! Число столбцов в массиве -- N/2 на случай, если
    ! будет наибольшее число пар совпавших строк.
    allocate (Matched_strings(0:N, N/2))
-   ! Маска уже совпадавших прежде строк. 
+   ! Маска уже совпадавших прежде строк.
    allocate (Matched(N), source=.false.)
    ! Маска строк, совпавших с данной.
    allocate (Mask(N))
 
    !call FindMatchedStrings_Imp(A, Matched, Mask, Matched_strings, K)
    call FindMatchedStrings(A, Ind, Matched, Mask, Matched_strings, K)
-   
+
    ! Вывод данных.
    open (file=output_file, encoding=E_, position='append', newunit=Out)
       write (Out, *)
@@ -73,14 +90,14 @@ contains
 
       integer  i, j, l, Matched_num
 
-      ! Работа с i-ой строкой. 
+      ! Работа с i-ой строкой.
       ! k - номер группы совпавших строк.
-      K = 1 
+      K = 1
       do i = 1, N
          ! Строка обрабатывается, если прежде ни с кем не совпадала.
          if(.not. Matched(i)) then
             ! i-ая строка уже с собой совпадает.
-            Matched_strings(0, k) = 1 
+            Matched_strings(0, k) = 1
             Mask(i) = .true.
             ! Создание маски для строк, полностью совпадающих с i-ой.
             do j = i+1, N
@@ -117,7 +134,7 @@ contains
       ! Число групп совпавших строк.
       K = K - 1
    end subroutine FindMatchedStrings_Imp
-   
+
    ! Чистая подпрограмма в регулярном стиле.
    pure subroutine FindMatchedStrings(A, Ind, Matched, Mask, Matched_strings, K)
       real(R_), intent(in) :: A(:, :)
@@ -127,9 +144,9 @@ contains
 
       integer :: i, j
 
-      ! Работа с i-ой строкой. 
+      ! Работа с i-ой строкой.
       ! k - номер группы совпавших строк.
-      k = 1 
+      k = 1
       do i=1, N
          ! Строка обрабатывается, если прежде ни с кем не совпадала.
          if(.not. Matched(i)) then
@@ -137,6 +154,7 @@ contains
             Mask(i) = .true.
             ! Создание маски для строк, полностью совпадающих с i-ой.
             do concurrent (j = i+1:N)
+               ! ALL определяет являются ли все элементы маски true.
                Mask(j) = All(A(:, j) == A(:, i))
             end do
             ! Записываем номера совпавших строк, если таких больше 1.

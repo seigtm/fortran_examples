@@ -1,29 +1,32 @@
 program exercise_5
    use Environment
-   
+
    implicit none
    character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
+   ! N - количество элементов в массиве. M - количество положительных элементов в массиве.
    integer                 :: In = 0, Out = 0, N = 0, M = 0
-   integer                 :: S = 0
-   integer, allocatable    :: Z(:)
-   logical, allocatable    :: Pos(:)
+   integer                 :: S = 0  ! Сумма положительных элементов массива.
+   integer, allocatable    :: Z(:)   ! Массив чисел.
+   logical, allocatable    :: Pos(:) ! Массив-маска положительных чисел.
 
    open (file=input_file, newunit=In)
-      read (In, *) N
-      allocate (Z(N))
-      read (In, *) Z
+      read (In, *) N  ! Считываем размер массива.
+      allocate (Z(N)) ! Выделяем памяти на N элементов массива Z.
+      read (In, *) Z  ! Считываем массив.
    close (In)
 
    !call PositiveImp(Z, S, M)
 
    ! Размещение данных в НАЧАЛЕ работы программы,
    ! а не внутри подпрограммы при КАЖДОМ её вызове.
-   allocate(Pos(N))
-   call Positive(Z, Pos, S, M)
+   allocate(Pos(N))            ! Выделяем памяти на N элементов массива Pos.
+   call Positive(Z, Pos, S, M) ! Вызываем нашу чистую подпрограмму.
 
+   ! Выводим считаннные и вычисленные данные.
    open (file=output_file, encoding=E_, newunit=Out)
       write (Out, "(i0)") N
       write (Out, "("//N//"(i0, 1x))") Z
+      ! Выводим количество положительных элементов в массиве и их сумму.
       write (Out, '(/2(a, T12, "= ", i0/))') 'Pos. items', M, "Sum", S
    close (Out)
 
@@ -52,8 +55,12 @@ contains
       intent(in)  Z
       intent(out) Pos, S, M
 
+      ! В одну строку создаём в массиве маску:
+      ! [ 1 4 -1 -3 7 ] => [ 1 1 0 0 1 ]
       Pos = Z > 0
+      ! Вычисляем сумму элементов массива Z по маске Pos.
       S = Sum(Z, Pos)
+      ! Подсчитываем количество положительных элементов массива.
       M = Count(Pos)
    end subroutine Positive
 end program exercise_5

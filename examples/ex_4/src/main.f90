@@ -18,7 +18,7 @@ program exercise_4
    N = Int((x2-x1) / h + .5_R_)+ 1 ! (0.2776 - 0.1552) / 0.0002 + 0.5 + 1 = 613.5 => Int(614).
    ! Размещение данных В НАЧАЛЕ работы программы,
    ! а не внутри процедуры при КАЖДОМ её вызове.
-   allocate (X(N), F(N), Sin_x(N))
+   allocate (X(N), F(N), Sin_x(N))  ! Sin_x(N) - не используется.
   
    !call TabFImp(x1, h, X, F)
    call TabF(x1, h, X, F)

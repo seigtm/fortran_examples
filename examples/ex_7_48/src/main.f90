@@ -1,6 +1,9 @@
+! Формирование вектора из элементов матрицы A,
+! находящихся выше главной диагонали.
+
 program exercise_7_48
    use Environment
-   
+
    implicit none
    character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
    integer                 :: In = 0, Out = 0, N = 0, i = 0
@@ -11,17 +14,17 @@ program exercise_7_48
       allocate (A(N, N))
       read (In, *) (A(i, :), i = 1, N)
    close (In)
-   
+
    open (file=output_file, encoding=E_, newunit=Out)
       write (Out, '('//N//'f6.2)') (A(i, :), i = 1, N)
    close (Out)
-  
+
    !B = GetUpperMatrix_Imp(A)
    B = GetUpperMatrix(A)
-   
+
    open (file=output_file, encoding=E_, newunit=Out, position='append')
       write (Out, *)
-      write (Out, '('//Size(B)//'f6.2)') B 
+      write (Out, '('//Size(B)//'f6.2)') B
    close (Out)
 
 contains
@@ -29,7 +32,7 @@ contains
    pure function GetUpperMatrix_Imp(A) result(B)
       real(R_), intent(in) :: A(:, :)
       real(R_)             :: B((Size(A) - UBound(A, 1)) / 2) ! == (N*N - N) / 2
-     
+
       integer i, j, N
       N = UBound(A, 1)
 
@@ -45,11 +48,11 @@ contains
       ! N+2 | 2, 2 | j + N
       ! ... | ... (N раз)
       ! N*N | N, N | j + N*(i-1)
-      ! 
+      !
       ! Поэтому k(i, j) = j + N*(i-1)
-      ! 
+      !
       ! 2. Исходная задача - формирование вектора B из наддиагональных элементов матрицы A, чтением по строкам.
-      ! Можно использовать предыдущую формулу для k, но вычитать из неё ко-во не вошедших элементов S(i)
+      ! Можно использовать предыдущую формулу для k, но вычитать из неё кол-во не вошедших элементов S(i)
       ! (из 1-ой строки не вошёл 1 элемент, из 2-ой -- 2 и т. д.):
       ! S(i) = 1 + 2 + ... + i = (1+i)*i/2, поэтому k(i, j) = j + N*(i-1) - (1+i)*i/2 ! делим на 2 в последнюю очередь,
       ! чтобы точно разделилось без остатка.
@@ -63,8 +66,10 @@ contains
    ! Чистая процедура в регулярном стиле.
    pure function GetUpperMatrix(A) result(B)
       real(R_), intent(in) :: A(:, :)
+      ! UBound - верхняя граница, то есть в данном случае:
+      !  индекс крайнего правого элемента:
       real(R_)             :: B((Size(A) - UBound(A, 1)) / 2) ! == (N*N - N) / 2
-     
+
       integer i, j, N
       N = UBound(A, 1)
 

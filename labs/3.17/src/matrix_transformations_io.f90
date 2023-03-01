@@ -11,6 +11,7 @@ contains
       open (file=input_file, newunit=In)
          read (In, *) MatrixSize
          allocate (matrix(MatrixSize, MatrixSize))
+         ! Хранение в памяти по столбцам.
          read (In, *) (matrix(Row, :), Row = 1, MatrixSize)
       close (In)
    end subroutine Read_Matrix
