@@ -38,7 +38,7 @@ program Sampling
       write(Out, fmt_real) "p", p
       write(Out, fmt_real) "q", q
       write(Out, fmt_int)  "N", N
-      write(Out, '(a, T7, "= (", ' // sizeA // 'f6.2, ")")') "A", A
+      write(Out, '(a, T7, "= (", ' // sizeA // 'f6.2, " )")') "A", A
       write(Out, *)
    close(In)
 
