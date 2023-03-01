@@ -4,7 +4,7 @@ module environment
    implicit none
 
    integer, parameter      :: I_ = INT32                             ! Разновидность типа для целочисленных переменных.
-   integer, parameter      :: R_ = REAL32                            ! Разновидность типа для вещественных переменных.
+   integer, parameter      :: R_ = REAL64                            ! Разновидность типа для вещественных переменных.
    integer, parameter      :: C_ = R_                                ! Разновидность типа для компексных переменных.
    integer, parameter      :: CH_= Selected_Char_Kind("ISO_10646")   ! Разновидность типа для символов.
    character(*), parameter :: E_ = "UTF-8"                           ! Кодировка файлов.
