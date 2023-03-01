@@ -1,6 +1,10 @@
+! Вычисляем значение функции:
+!  F = (Sin(X(i)-Y) / (Cos(X(i))*Cos(Y)).
+!  [F(x1,y1), F(x1,y2), F(x1,y3), ..., F(x2,y1), F(x2,y2), F(x2,y3), ...].
+
 program exercise_4_2a
    use Environment
-   
+
    implicit none
    character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
    integer                 :: In = 0, Out = 0, Nx = 0, Ny = 0, i = 0, j = 0
@@ -16,15 +20,15 @@ program exercise_4_2a
       write (Out, '(3(a, T4, "= ", f0.4/))') "x1", x1, "x2", x2, "dx", dx
       write (Out, '(3(a, T4, "= ", f0.4/))') "y1", y1, "y2", y2, "dy", dy
    close (Out)
-   
-   Nx = NInt((x2-x1) / dx) + 1
-   Ny = NInt((y2-y1) / dy) + 1
-  
+
+   Nx = NInt((x2-x1) / dx) + 1  ! Количество шагов от x1 до x2 с шагом = dx.
+   Ny = NInt((y2-y1) / dy) + 1  ! Количество шагов от y1 до y2 с шагом = dy.
+
    ! Размещение данных в НАЧАЛЕ работы программы,
    ! а не внутри процедуры при КАЖДОМ её вызове.
    allocate (X(Nx), Y(Ny), F(Nx*Ny))
- 
-   !call TabFImp(x1, y1, dx, dy, X, Y, F)
+
+   ! call TabFImp(x1, y1, dx, dy, X, Y, F)
    call TabF(x1, y1, dx, dy, X, Y, F)
 
    open (file=output_file, encoding=E_, newunit=Out, position='append')
@@ -45,13 +49,13 @@ contains
       !do concurrent (integer :: i = 1:Nx)
          X(i) = x1 + dx*(i-1)
       end do
-   
+
       ! Формирование Y = [y1, y2, y3, ...].
       do concurrent (j = 1:Ny)
       !do concurrent (integer :: j = 1:Ny)
          Y(j) = y1 + dy*(j-1)
       end do
-   
+
       ! Формирование X = [x1, x2, x3, ...]
       ! и F = [F(x1,y1), F(x1,y2), F(x1,y3), ..., F(x2,y1), F(x2,y2), F(x2,y3), ...].
       ! F(1) == F(x1, y1), F(2) == F(x1, y2), .... F(Ny) = F(x1, yNy), ...
@@ -69,13 +73,16 @@ contains
       intent(out) X, Y, F
       integer     i
 
-      ! Формирование X = [x1, x2, x3, ...].
+      ! Формирование X = [x1, x1+dx, x1+2dx, x1+3dx, x1+4dx],
+      !  то есть: X = [x1, x2, x3, x4, x5].
       X = [(x1 + dx*(i-1), i = 1, Nx)]
-   
-      ! Формирование Y = [y1, y2, y3, ...].
+
+      ! Формирование Y = [y1, y1+dy, y1+2dy, y1+3dy],
+      ! то есть: Y = [y1, y2, y3, y4].
       Y = [(y1 + dy*(i-1), i = 1, Ny)]
-   
-      ! Формирование F = [F(x1,y1), F(x1,y2), F(x1,y3), ..., F(x2,y1), F(x2,y2), F(x2,y3), ...].
+
+      ! Формирование
+      !  F = [F(x1,y1), F(x1,y2), F(x1,y3), F(x1,y4), ..., F(x2,y1), F(x2,y2), F(x2,y3), F(x2,y4), ...].
       ! F(1) == F(x1, y1), F(2) == F(x1, y2), .... F(Ny) = F(x1, yNy), ...
       F = [(Sin(X(i)-Y) / (Cos(X(i))*Cos(Y)), i = 1, Nx)]
    end subroutine TabF
