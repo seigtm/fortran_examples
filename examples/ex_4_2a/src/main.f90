@@ -21,12 +21,12 @@ program exercise_4_2a
       write (Out, '(3(a, T4, "= ", f0.4/))') "y1", y1, "y2", y2, "dy", dy
    close (Out)
 
-   Nx = NInt((x2-x1) / dx) + 1  ! Количество шагов от x1 до x2 с шагом = dx.
-   Ny = NInt((y2-y1) / dy) + 1  ! Количество шагов от y1 до y2 с шагом = dy.
+   Nx = NInt((x2-x1) / dx) + 1  ! Количество шагов от x1 до x2 с шагом dx (=5).
+   Ny = NInt((y2-y1) / dy) + 1  ! Количество шагов от y1 до y2 с шагом dy (=4).
 
    ! Размещение данных в НАЧАЛЕ работы программы,
    ! а не внутри процедуры при КАЖДОМ её вызове.
-   allocate (X(Nx), Y(Ny), F(Nx*Ny))
+   allocate (X(Nx), Y(Ny), F(Nx*Ny))  ! Nx * Ny = 20 комбинаций в итоге.
 
    ! call TabFImp(x1, y1, dx, dy, X, Y, F)
    call TabF(x1, y1, dx, dy, X, Y, F)
