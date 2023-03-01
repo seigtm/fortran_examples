@@ -1,6 +1,6 @@
 program exercise_4_3a
    use Environment
-   
+
    character(*), parameter :: input_file = "../data/input.txt", output_file = "output.txt"
    integer                 :: In = 0, Out = 0, N = 0
    real(R_)                :: a = 0, b = 0, h = 0, I = 0
@@ -13,7 +13,11 @@ program exercise_4_3a
    open (file=output_file, encoding=E_, newunit=Out)
       write (Out, '(3(a, T4, "= ", f0.4/))') "a", a, "b", b, "h", h
    close (Out)
-  
+
+   ! Количество шагов от a - нижней границы интеграла
+   !  до b - верхней границы интеграла
+   !  с шагом h.
+   ! Добавляем 0.5 на случай неудачного округления.
    N = Int((b - a) / h + .5_R_)
 
    !I = IntegrateImp(a, h, N)
@@ -34,7 +38,7 @@ contains
       intent(in)  a, h, N
       real(R_)    x
       integer     j
-   
+
       I = 0
       x = a
       do j = 1, N
@@ -43,16 +47,22 @@ contains
       end do
       I = I * h
    end function IntegrateImp
-   
+
    ! Чистая подпрограмма в регулярном стиле.
    pure subroutine Integrate(a, h, X, I)
       real(R_)    a, h, X(:), I
       intent(in)  a, h
       intent(out) X, I
       integer     j
-  
+
+      ! X = [a, a+h, a+2h, ..., a+Size(X)h]
       X = [(a + (j-1)*h, j = 1, Size(X))]
+
+      ! Xi = 0.8 * Xi * Exp(-(Xi^2 + 0.5)).
       X = .8_R_* X * Exp(-(X*X + .5_R_))
+
+      ! Суммируем элементы и домонжаем на h,
+      !  тем самым вычисляя значение интеграла.
       I = Sum(X) * h
    end subroutine Integrate
 end program exercise_4_3a
