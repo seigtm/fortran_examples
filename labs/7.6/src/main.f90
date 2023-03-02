@@ -43,7 +43,7 @@ program SquareMatrix
    close(out)
 
 contains
-   real(R_) function CalculateS_SumProdSqrt(matrix) result(s)
+   real(R_) pure function CalculateS_SumProdSqrt(matrix) result(s)
       real(R_), intent(in) :: matrix(:, :)
       real(R_)             :: matrix_squared(size(matrix, dim=2), size(matrix, dim=2))
       real(R_)             :: row_sums(Size(matrix, dim=2))
@@ -57,7 +57,7 @@ contains
       s = Sqrt(Product(row_sums))
    end function CalculateS_SumProdSqrt
 
-   real(R_) function CalculateS_Norm2Prod(matrix) result(s)
+   real(R_) pure function CalculateS_Norm2Prod(matrix) result(s)
       real(R_), intent(in) :: matrix(:, :)
 
       ! 1. Вычисляем Евклидову векторную норму каждой строки матрицы.
