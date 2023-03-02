@@ -61,7 +61,7 @@ contains
       real(R_), intent(in) :: matrix(:, :)
 
       ! 1. Вычисляем Евклидову векторную норму каждой строки матрицы.
-      !    Norm2(A) == Sqrt(Product(a_(ij)^2)).
+      !    Norm2(A) == Sqrt(Sum(a_(ij)^2)).
       ! 2. Перемножаем эти нормы.
       s = Product(Norm2(matrix, dim=2))
    end function CalculateS_Norm2Prod
