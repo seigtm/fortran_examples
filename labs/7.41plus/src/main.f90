@@ -14,7 +14,7 @@ program ArrayConverter
 
    character(*), parameter   :: input_file  = "../data/input.txt", output_file = "output.txt"
    real(R_), allocatable     :: matrix_2d(:, :)
-   real(R_), allocatable     :: matrix_1d(:)
+   real(R_), allocatable     :: matrix_1d_by_columns(:), matrix_1d_by_rows(:)
    integer(I_)               :: in, n, m, i, out
 
    open(file=input_file, newunit=in)
@@ -35,17 +35,19 @@ program ArrayConverter
    !  [ 1 2 3 ]
    !  [ 4 5 6 ]
    !            => [ 1 4 2 5 3 6 ].
-   matrix_1d = [matrix_2d]
+   matrix_1d_by_columns = [matrix_2d]
 
    ! Сформируется по строкам, то есть:
    !  [ 1 2 3 ]
    !  [ 4 5 6 ]
    !            => [ 1 2 3 4 5 6 ].
-   ! matrix_1d = [(matrix_2d(i, :), i = 1, n)]
+   matrix_1d_by_rows = [(matrix_2d(i, :), i = 1, n)]
 
    open(file=output_file, encoding=E_, newunit=out, position="append")
-      write(out, "(a)") "matrix_1d:"
-      write(out, "(" // size(matrix_1d) // "f7.2)") matrix_1d
+      write(out, "(a)") "matrix_1d_by_columns:"
+      write(out, "(" // size(matrix_1d_by_columns) // "f7.2)") matrix_1d_by_columns
+      write(out, "(a)") "matrix_1d_by_rows:"
+      write(out, "(" // size(matrix_1d_by_rows) // "f7.2)") matrix_1d_by_rows
    close(out)
 
 end program ArrayConverter
