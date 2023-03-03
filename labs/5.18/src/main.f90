@@ -22,6 +22,8 @@ program Sampling
    ! p и q - заданные значения, по которым будет осуществляться выборка.
    ! mean_val - среднее арифметическое.
    real(R_)                 :: p, q, mean_val
+   ! real(R_)                 :: p, q
+   ! real(I_ * 2)             :: mean_val
    ! N - количество первых значений выборки, по которым будет находиться среднее арифметическое.
    integer(I_)              :: In, Out, sizeA, N
    ! Исходный массив.
@@ -54,6 +56,7 @@ program Sampling
    close(Out)
 
 contains
+   ! real(I_ * 2) pure function Mean(A, p, q, N)
    real(R_) pure function Mean(A, p, q, N)
       real(R_),    intent(in) :: A(:)
       real(R_),    intent(in) :: p, q
@@ -73,6 +76,7 @@ contains
 
       ! Вычисляем среднее арифметическое.
       Mean = sum(GoodA(1:N)) / real(N, R_)
+      ! Mean = sum(GoodA(1:N)) / real(N, I_ * 2)
    end function Mean
 
 end program Sampling
