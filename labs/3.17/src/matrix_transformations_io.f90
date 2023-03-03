@@ -4,9 +4,9 @@ module Matrix_Transformations_IO
 
 contains
    subroutine Read_Matrix(input_file, matrix)
-      character(*),          intent(in)    :: input_file
-      real(R_), allocatable, intent(inout) :: matrix(:, :)
-      integer(I_)                          :: In, Row, MatrixSize
+      character(*),          intent(in)  :: input_file
+      real(R_), allocatable, intent(out) :: matrix(:, :)
+      integer(I_)                        :: In, Row, MatrixSize
 
       open (file=input_file, newunit=In)
          read (In, *) MatrixSize

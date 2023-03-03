@@ -9,8 +9,8 @@ contains
    ! 0 1 1 1 1
    ! 1 1 1 1 1
    pure subroutine Zero_Elements_Above_Side_Diagonal(matrix)
-      real(R_), intent(inout) :: matrix(:, :)
-      integer(I_)             :: Column, MatrixSize
+      real(R_), intent(out) :: matrix(:, :)
+      integer(I_)           :: Column, MatrixSize
 
       MatrixSize = size(array=matrix, dim=2)
       ! DO CONCURRENT указывает, что отдельные итерации цикла
