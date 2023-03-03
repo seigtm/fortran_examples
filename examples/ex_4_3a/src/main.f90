@@ -1,3 +1,5 @@
+! Вычисление интеграла: Int[0 -> 1](0.8x * e^ * (-x^2 + 0.5)).
+
 program exercise_4_3a
    use Environment
 

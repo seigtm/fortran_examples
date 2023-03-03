@@ -8,7 +8,7 @@ contains
    ! 0 0 1 1 1
    ! 0 1 1 1 1
    ! 1 1 1 1 1
-   subroutine Zero_Elements_Above_Side_Diagonal(matrix)
+   pure subroutine Zero_Elements_Above_Side_Diagonal(matrix)
       real(R_), intent(inout) :: matrix(:, :)
       integer(I_)             :: Column, MatrixSize
 
