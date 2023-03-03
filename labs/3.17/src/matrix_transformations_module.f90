@@ -21,7 +21,7 @@ contains
       !   (в памяти) => [ 1, 4, 7, 2, 5, 8, 3, 6, 9 ]
       !      (обход) => [ 1, 4, 2 ].
       do Column=1, MatrixSize - 1
-         matrix(1:MatrixSize-Column, Column) = 0.0
+         matrix(1:MatrixSize-Column, Column) = 0
       end do
    end subroutine Zero_Elements_Above_Side_Diagonal
 

@@ -27,7 +27,7 @@ contains
    subroutine Output_Integral(output_file, i)
       character(*), intent(in) :: output_file
       real(R_),     intent(in) :: i
-      character(*), parameter  :: FMT = '(a, T4, "= ", f0.5)'
+      character(*), parameter  :: FMT = '(a, T4, "= ", f0.8)'
       integer(I_)              :: Out
 
       open (file=output_file, encoding=E_, newunit=Out, position="append")

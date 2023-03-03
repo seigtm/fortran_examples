@@ -26,10 +26,10 @@ program Integral
    call Read_Integral_Values(INPUT_FILE, a, b, h)
    call Output_Integral_Values(OUTPUT_FILE, a, b, h)
    ! Вычисляем количество шагов.
-   N = Int((b - a) / h + .5_R_)
+   N = Int((b - a) / h + .5_R_) + 1
    ! Выделяем массив на это количество шагов.
    allocate(X(N))
    ! Вызываем нашу чистую подпрограмму.
-   call Integrate(a, b, h, X, I)
+   call Integrate(a, h, X, I)
    call Output_Integral(OUTPUT_FILE, I)
 end program Integral
