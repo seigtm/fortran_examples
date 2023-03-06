@@ -32,7 +32,9 @@ program MatrixNorm
 
    call Read_Matrix(input_file, Matrix)
    call Output_Matrix(output_file, Matrix, "rewind")
-   
+
+   write(*,*) Norm2(matrix)
+
    z = Euclidean_Norm(matrix)
    if (z < 1) then
       ! Y = E + X + 1/2 * X^2.
@@ -84,6 +86,7 @@ contains
       real(R_), intent(in) :: matrix(:, :)
       integer(I_)          :: column, row, matrix_size
 
+      Euclidean_Norm = 0
       matrix_size = Size(matrix, dim=2)
       ! Вычисляем сумму квадратов элементов каждой строки матрицы.
       do row = 1, matrix_size
