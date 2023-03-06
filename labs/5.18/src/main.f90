@@ -71,12 +71,10 @@ contains
       if(size(GoodA) < N) then
          ! Возвращаем NaN.
          Mean = IEEE_Value(Mean, IEEE_Quiet_NaN)
-         return
+      else
+         ! Вычисляем среднее арифметическое.
+         Mean = sum(GoodA(1:N)) / real(N, R_)
       endif
-
-      ! Вычисляем среднее арифметическое.
-      Mean = sum(GoodA(1:N)) / real(N, R_)
-      ! Mean = sum(GoodA(1:N)) / real(N, I_ * 2)
    end function Mean
 
 end program Sampling
