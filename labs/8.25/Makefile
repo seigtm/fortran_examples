@@ -4,8 +4,10 @@ FOPT=-O3 -ftree-vectorize -fopt-info-vec
 
 all:
 	$(FC) $(FFLAGS) -c src/environment.f90 -J obj/ -o obj/environment.o
+	$(FC) $(FFLAGS) -c src/matrix_io.f90 -J obj/ -o obj/matrix_io.o
+	$(FC) $(FFLAGS) -c src/norm2_module.f90 -J obj/ -o obj/norm2_module.o
 	$(FC) $(FFLAGS) $(FOPT) -c src/main.f90 -I obj/ -o obj/main.o
-	$(FC) $(FFLAGS) $(FOPT) -o bin/app ./obj/environment.o obj/main.o
+	$(FC) $(FFLAGS) $(FOPT) -o bin/app obj/environment.o obj/matrix_io.o obj/norm2_module.o obj/main.o
 
 clean:
 	rm -rf obj/*
