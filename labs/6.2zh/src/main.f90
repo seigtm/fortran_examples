@@ -39,95 +39,46 @@ program LnX
       write(Out, *)
    close(In)
 
-   ! Вычисляем значение натурального логарифма нашей функцией.
-   log_x = Ln_X(x)
-
-   open(file=output_file, encoding=E_, newunit=out, position="append")
-      ! Выводим наш ln(x), встроенный ln(x) и разницу между ними (ошибку).
-      write (Out, fmt) "ln(x)",         log_x
+   open(file=output_file, encoding=E_, newunit=out, position="append") 
+      ! В любом случае выводим результат вычисления встроенной функцией.
       write (Out, fmt) "Fortran ln(x)", log(x)
-      write (Out, fmt) "Error",         log_x - log(x)
+
+      if (x <= 0.5) then
+         ! Выводим информацию о том, что наш ряд не сходится для x <= 0.5.
+         write (Out, fmt) "Ln_X() не определён для заданного x", x
+      else
+         ! Вычисляем значение натурального логарифма нашей функцией.
+         log_x = Ln_X(x)
+         ! Выводим наш ln(x), встроенный ln(x) и разницу между ними (ошибку).
+         write (Out, fmt) "ln(x)", log_x
+         write (Out, fmt) "Error", log_x - log(x)
+      end if
    close(Out)
 
 contains
-   ! Реализация, в которой мы вычисляем текущие
-   !  x и (x - 1) относительно предыдущих.
+   ! (x-1)/x * [(x-1)/x / n]
    real(R_) pure function Ln_X(x)
       real(R_), intent(in) :: x
-      real(R_)             :: dividend, divisor, x_current, x_minus_1, old_ln_x
+      real(R_)             :: dividend, old_ln_x, current_dividend
       integer(I_)          :: n
 
-      ! Если x <= 0.5, то возвращаем NaN,
-      !  т.к. по условию задачи x > 0.5.
-      if (x <= 0.5) then
-         Ln_X = IEEE_Value(x, IEEE_Quiet_NaN)
-      else  ! x > 0.5:
-         x_current = x
+      n = 1
+      ! Вычисляем первый член ряда ln(x).
+      dividend = (x - 1) / x
+      current_dividend = dividend
+      Ln_X = dividend 
 
-         ! Числитель первого члена ряда: x - 1.
-         x_minus_1 = x_current - 1
-         dividend = x_minus_1
-
-         ! Знаменатель первого члена ряда: x.
-         divisor = x_current
-         ! Переменная для знаменателя, инкрементируемая с каждой итерацией.
-         n = 1
-
-         ! Вычисляем первый член ряда ln(x).
-         Ln_X = dividend / divisor
-
-         ! Цикл с постусловием: пока сумма не перестанет меняться.
-         do
-            ! Сохраняем текущую сумму для нашего постусловия (см. выше).
-            old_ln_x  = Ln_X
-
-            ! Числитель: (x - 1)^n.
-            dividend = dividend * x_minus_1
-
-            ! Знаменатель: n * x^n.
-            n = n + 1
-            x_current = x_current * x  ! Повышает свою степень с каждой итерацией.
-            divisor = n * x_current
-
-            ! Вычисление текущего члена ряда и прибавление его к общей сумме.
-            Ln_X = Ln_X + dividend / divisor
-
-            ! Если сумма перестала меняться, выходим.
-            if (old_ln_x == Ln_X) exit
-         end do
-      end if
+      ! Цикл с постусловием: пока сумма не перестанет меняться.
+      do
+         ! Сохраняем текущую сумму для нашего постусловия (см. выше).
+         old_ln_x  = Ln_X
+         ! Вычисление текущего члена ряда и прибавление его к общей сумме.
+         current_dividend = current_dividend * dividend
+         n = n + 1
+         Ln_X = Ln_x + current_dividend / n
+         ! Если сумма перестала меняться, выходим.
+         if (old_ln_x == Ln_X) &
+            exit
+      end do
    end function Ln_X
-
-   ! Реализация, которая не удовлетворяет условию
-   !  "очередной член вычислять относительно предыдущего",
-   !  но которая, на мой взгляд, читаемее.
-   real(R_) pure function Ln_X_Impl(x)
-      real(R_), intent(in) :: x
-      real(R_)             :: x_minus_1, old_ln_x
-      integer(I_)          :: n
-
-      ! Если x <= 0.5, то возвращаем NaN,
-      !  т.к. по условию задачи x > 0.5.
-      if (x <= 0.5) then
-         Ln_X_Impl = IEEE_Value(x, IEEE_Quiet_NaN)
-      else  ! x > 0.5:
-         ! Ln_X изначально равен нулю.
-         Ln_X_Impl = 0.0_R_
-         ! Вычисляем заранее x - 1, чтобы не вычислять каждый раз.
-         x_minus_1 = x - 1.0_R_
-         ! От итерации с итерации мы на самом деле добавляем к предыдущей сумме:
-         !  ((x - 1)^n) / (n * x^n), где n [1; +inf).
-         ! По этой причине присваиваем n значение 1 и будем инкрементировать его.
-         n = 1
-
-         ! Цикл с постусловием: пока сумма не перестанет меняться.
-         do
-            old_ln_x  = Ln_X_Impl
-            Ln_X_Impl = Ln_X_Impl + x_minus_1**n / (n * x**n)
-            if (old_ln_x == Ln_X_Impl) exit
-            n = n + 1
-         end do
-      end if
-   end function Ln_X_Impl
-
 end program LnX

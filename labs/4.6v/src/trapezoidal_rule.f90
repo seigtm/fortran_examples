@@ -31,3 +31,4 @@ contains
       I = Sum(X) * h
    end subroutine Integrate
 end module Trapezoidal_Rule
+
