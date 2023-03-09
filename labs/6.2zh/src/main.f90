@@ -39,13 +39,13 @@ program LnX
       write(Out, *)
    close(In)
 
-   open(file=output_file, encoding=E_, newunit=out, position="append") 
+   open(file=output_file, encoding=E_, newunit=out, position="append")
       ! В любом случае выводим результат вычисления встроенной функцией.
       write (Out, fmt) "Fortran ln(x)", log(x)
 
       if (x <= 0.5) then
          ! Выводим информацию о том, что наш ряд не сходится для x <= 0.5.
-         write (Out, fmt) "Ln_X() не определён для заданного x", x
+         write (Out, *) "Ln_X() не определён для заданного x. [ Должен быть: x > 0.5 ]!"
       else
          ! Вычисляем значение натурального логарифма нашей функцией.
          log_x = Ln_X(x)
@@ -55,30 +55,57 @@ program LnX
       end if
    close(Out)
 
+   ! Альтернативный вариант без ветвления внутри блока open() / close():
+   ! open(file=output_file, encoding=E_, newunit=out, position="append")
+   !    ! В любом случае выводим результат вычисления встроенной функцией.
+   !    write (Out, fmt) "Fortran ln(x)", log(x)
+   ! close(Out)
+
+   ! ! Ветвление снаружи.
+   ! if (x <= 0.5) then
+   !    open(file=output_file, encoding=E_, newunit=out, position="append")
+   !    ! Выводим информацию о том, что наш ряд не сходится для x <= 0.5.
+   !       write (Out, *) "Ln_X() не определён для заданного x. [ Должен быть: x > 0.5 ]!"
+   !    close(Out)
+   ! else
+   !    open(file=output_file, encoding=E_, newunit=out, position="append")
+   !       ! Вычисляем значение натурального логарифма нашей функцией.
+   !       log_x = Ln_X(x)
+   !       ! Выводим наш ln(x), встроенный ln(x) и разницу между ними (ошибку).
+   !       write (Out, fmt) "ln(x)", log_x
+   !       write (Out, fmt) "Error", log_x - log(x)
+   ! end if
+
 contains
-   ! (x-1)/x * [(x-1)/x / n]
+   ! Функция, вычисляющая значение натурального логарифма по переменной x.
+   ! Каждый последующий член ряда вычисляется данным образом:
+   !  1. Умножить предшедствующий член на (x - 1) / x;
+   !  2. Инкрементировать переменную n, которая будет стоять в знаменателе (см. ниже);
+   !  2. Поделить текущий член на n.
    real(R_) pure function Ln_X(x)
       real(R_), intent(in) :: x
-      real(R_)             :: dividend, old_ln_x, current_dividend
+      real(R_)             :: diff, current, old_ln_x
       integer(I_)          :: n
 
-      n = 1
       ! Вычисляем первый член ряда ln(x).
-      dividend = (x - 1) / x
-      current_dividend = dividend
-      Ln_X = dividend 
+      diff = (x - 1) / x  ! diff в значении "разница между соседними элементами".
+      current = diff      ! Первый член ряда и является значению diff.
+      Ln_X = diff         ! В текущей running sum пока что только этот первый член.
 
-      ! Цикл с постусловием: пока сумма не перестанет меняться.
-      do
-         ! Сохраняем текущую сумму для нашего постусловия (см. выше).
-         old_ln_x  = Ln_X
+      ! Нас это полностью устраивает, поскольку если x = 1, то ln(1) = 0.
+      ! Цикл ниже не выполнится ни разу, так как old_ln_x == Ln_X [ 0 == 0 ],
+      !  но и ответ пользователю вернётся правильный: 0.
+      old_ln_x = 0
+
+      ! Так как первый член ряда у нас уже вычислен выше, начинаем с n = 2.
+      n = 2
+      ! Цикл с предусловием: пока сумма меняется.
+      do while(old_ln_x /= Ln_X)
+         old_ln_x  = Ln_X  ! Сохраняем текущую сумму.
          ! Вычисление текущего члена ряда и прибавление его к общей сумме.
-         current_dividend = current_dividend * dividend
-         n = n + 1
-         Ln_X = Ln_x + current_dividend / n
-         ! Если сумма перестала меняться, выходим.
-         if (old_ln_x == Ln_X) &
-            exit
+         current = current * diff   ! (x-1)/x => ((x-1)^2)/( x^2) => ((x-1)^3)/( x^3) => ...
+         Ln_X = Ln_x + current / n  ! (x-1)/x  + ((x-1)^2)/(2x^2)  + ((x-1)^3)/(3x^3)  + ...
+         n = n + 1                  ! Инкрементируем n, стоящий в знаменателе.
       end do
    end function Ln_X
 end program LnX
