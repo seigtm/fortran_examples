@@ -40,6 +40,12 @@ program SortWithPackMask
    close(out)
 
 contains
+   ! Сортирует положительные элементы массива array в порядке убывания.
+   ! Сортируемые элементы помещаются в конец массива.
+   ! Несортируемые (не положительные, Ai <= 0) остаются в начале массива.
+   ! Пример:
+   !  array  = ( -8 -2  2  1 -5  3 -4  4  0 -9 );
+   !  sorted = ( -8 -2 -5 -4  0 -9  4  3  2  1 ).
    pure subroutine SortPositives(array)
       real(R_), intent(out) :: array(:)
       logical               :: positives(size(array))
