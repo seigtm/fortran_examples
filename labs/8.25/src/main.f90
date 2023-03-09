@@ -30,25 +30,13 @@ program MatrixNorm
 
    call Read_Matrix(input_file, matrix)
    call Output_Matrix(output_file, matrix, "rewind")
-   ! if (.not. Is_Square_Matrix(matrix)) then
-   !    call Output_Error(output_file, "append")
-   ! else
-   !    ! Everything else...
-   ! end if
-
-   ! FIXME: remove, it's here for debug purposes.
-   write(*,*) Norm2(matrix) 
 
    z = Euclidean_Norm(matrix)
-
-   if (IEEE_Is_NaN(z)) then
-      ! call Output_Error(output_file, "append")  ! TODO: implement or get rid of.
-   else if (z < 1) then
+   if (z < 1) then
       ! Y = E + X + 1/2 * X^2.
       call Special_Case(matrix)
       z = Euclidean_Norm(matrix)
-      call Output_Euclidean_Norm(output_file, z, "append")  ! FIXME: stupid.
-   else
-      call Output_Euclidean_Norm(output_file, z, "append")  ! FIXME: stupid.
-   end if
+   endif
+
+   call Output_Euclidean_Norm(output_file, z, "append")
 end program MatrixNorm
