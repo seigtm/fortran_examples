@@ -18,7 +18,6 @@
 
 program MatrixNorm
    use Environment
-   use IEEE_Arithmetic  ! Для NaN.
    use Norm2_Module
    use Norm2_IO
 

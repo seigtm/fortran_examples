@@ -1,6 +1,5 @@
 module Norm2_Module
    use Environment
-   use IEEE_Arithmetic  ! NaN.
    implicit none
 
 contains
@@ -8,24 +7,15 @@ contains
       real(R_), intent(in) :: matrix(:, :)
       integer(I_)          :: column, row
 
-      ! Если матрица не квадратная, то вернуть NaN,
-      !  поскольку задача по ТЗ подразумевает квадартные матрицы,
-      !  а также в выражении Y = E [ + X ] + 1/2 * [ X^2 ], мы
-      !  складываем матрицы, а складывать можно только матрицы
-      !  одинаковой размерности.
-      if (Size(matrix, dim=1) /= Size(matrix, dim=2)) then
-         Euclidean_Norm = IEEE_Value(Euclidean_Norm, IEEE_Quiet_NaN)
-      else
-         Euclidean_Norm = 0
-         ! Вычисляем сумму квадратов элементов каждой строки матрицы.
-         do row = 1, Size(matrix, dim=1)
-            do column = 1, Size(matrix, dim=1)
-               Euclidean_Norm = Euclidean_Norm + matrix(row, column) ** 2.0_R_
-            end do
+      Euclidean_Norm = 0
+      ! Вычисляем сумму квадратов элементов каждой строки матрицы.
+      do row = 1, Size(matrix, dim=1)
+         do column = 1, Size(matrix, dim=1)
+            Euclidean_Norm = Euclidean_Norm + matrix(row, column) ** 2.0_R_
          end do
-         ! Берём от результата квадратный корень.
-         Euclidean_Norm = Sqrt(Euclidean_Norm)
-      end if
+      end do
+      ! Берём от результата квадратный корень.
+      Euclidean_Norm = Sqrt(Euclidean_Norm)
    end function Euclidean_Norm
 
    subroutine Special_Case(matrix)
