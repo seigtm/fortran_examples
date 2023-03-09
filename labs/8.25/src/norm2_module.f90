@@ -48,6 +48,7 @@ contains
          end do
       end do
       !  2. Вычисляем матрицу.
+      ! С -O3 компилятор всё равно привёл бы деление на 2 к инструкции mulss.
       matrix = 1.0_R_ + matrix + 0.5_R_ * multiplied
    end subroutine Special_Case
 
