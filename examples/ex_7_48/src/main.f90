@@ -19,8 +19,8 @@ program exercise_7_48
       write (Out, '('//N//'f6.2)') (A(i, :), i = 1, N)
    close (Out)
 
-   !B = GetUpperMatrix_Imp(A)
-   B = GetUpperMatrix(A)
+   B = GetUpperMatrix_Imp(A)
+   !B = GetUpperMatrix(A)
 
    open (file=output_file, encoding=E_, newunit=Out, position='append')
       write (Out, *)
@@ -58,7 +58,16 @@ contains
       ! чтобы точно разделилось без остатка.
       do i = 1, N-1
          do j = i+1, N
-            B(j + N*(i-1) - (1+i)*i/2) = A(i, j)
+            B(j + N*(i-1) - (1+i)*i/2) = A(i, j) ! Обход нерегулярный!
+            ! Мы храним матрицу в памяти по столбцам, а читаем по строкам.
+            ! 1.1 1.2 1.3 1.4
+            ! 2.1 2.2 2.3 2.4
+            ! 3.1 3.2 3.3 3.4
+            ! 4.1 4.2 4.3 4.4
+            !  в памяти     => [1.1 2.1 3.1 4.1 1.2 2.2 3.2 4.2 1.3 2.3 3.3 4.3 1.4 2.4 3.4 4.4]
+            !  обходим      => [                1.2             1.3             1.4            ]
+            !               => [                                    2.3             2.4 3.4    ]
+            !  в результате => [1.2 1.3 1.4 2.3 2.4 3.4]
          end do
       end do
    end function GetUpperMatrix_Imp
