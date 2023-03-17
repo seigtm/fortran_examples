@@ -29,10 +29,11 @@ program ArrayConverter
 
    ! Считываем вторую двумерную матрицу.
    open(file=input_file_2, newunit=in)
-      read(in, *) n2, m2
-      allocate(matrix_2d_2(n2, m2))
-      ! Хранение в памяти по столбцам.
-      read(in, *) (matrix_2d_2(i, :), i = 1, n2)
+      read(in, *) m2, n2
+      allocate(matrix_2d_2(m2, n2))
+      ! Хранение в памяти по строкам.
+      ! 1 индекс - столбца, 2 индекс - строки.
+      read(in, *) matrix_2d_2
    close(in)
 
    open(file=output_file, encoding=E_, newunit=out)
@@ -45,7 +46,7 @@ program ArrayConverter
       ! Вторая матрица.
       write(out, "(a)") "matrix_2d_2:"
       write(out, '(2(a, " = ", i0/))') "n", n2, "m", m2
-      write(out, "(" // m2 // "f7.2)") (matrix_2d_2(i, :), i = 1, n2)
+      write(out, "(" // m2 // "f7.2)") (matrix_2d_2(:, i), i = 1, n2)
       write(out, *)
    close(out)
 
@@ -59,7 +60,7 @@ program ArrayConverter
    !  [ 1 2 3 ]
    !  [ 4 5 6 ]
    !            => [ 1 2 3 4 5 6 ].
-   matrix2_by_rows = [(matrix_2d_2(i, :), i = 1, n2)]
+   matrix2_by_rows = [matrix_2d_2]
 
    open(file=output_file, encoding=E_, newunit=out, position="append")
       write(out, "(a)") "matrix1_by_columns:"
