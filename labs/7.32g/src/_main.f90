@@ -25,14 +25,14 @@ program SortMatrixRows
    implicit none
 
    character(*), parameter   :: input_file  = "../data/input.txt", output_file = "output.txt"
-   integer(I_)               :: in, out, i, rows, columns
-   real(R_), allocatable     :: matrix(:, :), matrix_abs(:, :)
+   integer(I_)               :: in, out, i, columns, rows
+   real(R_), allocatable     :: matrix(:, :), matrix_row_abs(:)
 
    open(file=input_file, newunit=in)
-      read(in, *) rows, columns  ! rows - строк, columns - столбцов.
-      ! Хранение в памяти по строкам.
-      ! 1 индекс - столбца (j), 2 индекс - строки (i).
+      read(in, *) columns, rows ! columns - столбцов, rows - строк.
       allocate(matrix(columns, rows))
+      ! Хранение в памяти по строкам.
+      ! 1 индекс - столбца, 2 индекс - строки.
       read(in, *) matrix
    close(in)
 
@@ -43,8 +43,11 @@ program SortMatrixRows
       write(out, *)
    close(out)
 
-   matrix_abs = Abs(matrix)
-   call SortMatrix(matrix, matrix_abs)
+   allocate(matrix_row_abs(columns))
+   do concurrent(i = 1:rows)
+      matrix_row_abs = abs(matrix(:, i))
+      call SortMatrixRow(matrix(:, i), matrix_row_abs)
+   end do
 
    open(file=output_file, encoding=E_, newunit=out, position="append")
       write(out, "(a)") "sorted matrix:"
@@ -52,25 +55,23 @@ program SortMatrixRows
    close(out)
 
 contains
-   pure subroutine SortMatrix(matrix, matrix_abs)
-      real(R_), intent(out) :: matrix(:, :), matrix_abs(:, :)
-      integer(I_)           :: i, j, min_index
+   pure subroutine SortMatrixRow(matrix_row, matrix_row_abs)
+      real(R_), intent(out) :: matrix_row(:), matrix_row_abs(:)
+      integer(I_)           :: i, min_index
       real(R_)              :: tmp
 
-      do concurrent(i = 1:UBound(matrix, 2))  ! Векторизация.
-         do j = 1, UBound(matrix, 1)
-            min_index = MinLoc(matrix_abs(j:, i), dim=1) + j - 1
-            if (j /= min_index) then
-               tmp                  = matrix(j, i)
-               matrix(j, i)         = matrix(min_index, i)
-               matrix(min_index, i) = tmp
+      do i = 1, Size(matrix_row_abs) - 1
+         min_index = MinLoc(matrix_row_abs(i:), 1) + i - 1
+         if (i /= min_index) then
+            tmp                       = matrix_row_abs(i)
+            matrix_row_abs(i)         = matrix_row_abs(min_index)
+            matrix_row_abs(min_index) = tmp
 
-               tmp                      = matrix_abs(j, i)
-               matrix_abs(j, i)         = matrix_abs(min_index, i)
-               matrix_abs(min_index, i) = tmp
-            end if
-         end do
+            tmp                   = matrix_row(i)
+            matrix_row(i)         = matrix_row(min_index)
+            matrix_row(min_index) = tmp
+         end if
       end do
-   end subroutine SortMatrix
+   end subroutine SortMatrixRow
 
 end program SortMatrixRows
