@@ -33,14 +33,22 @@ contains
    end function F_Imp
 
    ! Чистая функция вычисления интеграла для заданного p в регулярном стиле.
-   pure subroutine Integral(p1, delta_p, P, X, I)
+   subroutine Integral(p1, delta_p, P, X, I)
       real(R_), intent(in)    :: p1, delta_p
       real(R_), intent(out)   :: I(:), P(:), X(:)
       integer                 :: j
 
       P = [(p1 + delta_p*(j-1),  j = 1, Size(P))]  ! ВЕКТОРИЗАЦИЯ.
       X = [(a + (j-1)*h,         j = 1, Size(X))]  ! ВЕКТОРИЗАЦИЯ.
+
+      ! Типичный вопрос из практикума: что вычисляется при j = 1 в терминах задачи на строке ниже?
       I = [(Sum(F(P(j), X)),     j = 1, Size(P))]
+      ! Здесь вычисляется сумма значений функции в точках интерполяции.
+      ! F(P(j=1), X), где:
+      !  a) p(j=1) ~ 1.2;
+      !  b) X - вектор от 0 до 1 с шагом = 0.1;
+      !  c) а само значение I ~ 32.1940422.
+
       I = I * h                                    ! ВЕКТОРИЗАЦИЯ.
    end subroutine Integral
 
