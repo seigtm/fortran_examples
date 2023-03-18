@@ -25,27 +25,65 @@ program SortMatrixRows
    implicit none
 
    character(*), parameter   :: input_file  = "../data/input.txt", output_file = "output.txt"
-   integer(I_)               :: in, out, i, n, m
-   real(R_), allocatable     :: matrix(:, :)
+   integer(I_)               :: in, out, i, columns, rows
+   real(R_), allocatable     :: matrix(:, :), matrix_row_abs(:)
 
    open(file=input_file, newunit=in)
-      read(in, *) n, m
-      allocate(matrix(n, m))
-      read(in, *) (matrix(i, :), i = 1, n)
+      read(in, *) columns, rows ! columns - столбцов, rows - строк.
+      allocate(matrix(columns, rows))
+      ! Хранение в памяти по строкам.
+      ! 1 индекс - столбца, 2 индекс - строки.
+      read(in, *) matrix
    close(in)
 
    open(file=output_file, encoding=E_, newunit=out)
-      write(out, '(2(a, " = ", i0/))')  "n", n, "m", m
+      write(out, '(2(a, " = ", i0/))')  "columns", columns, "rows", rows
       write(out, "(a)") "matrix:"
-      write(out, "(" // m // "f7.2)") (matrix(i, :), i = 1, n)
+      write(out, "(" // columns // "f7.2)") (matrix(:, i), i = 1, rows)
       write(out, *)
    close(out)
 
-   ! TODO: code here...
+   allocate(matrix_row_abs(columns))
+   do concurrent(i = 1:rows)
+      matrix_row_abs = abs(matrix(:, i))
+      call SortMatrixRow(matrix(:, i), matrix_row_abs)
+   end do
 
    open(file=output_file, encoding=E_, newunit=out, position="append")
-      ! TODO: output results.
+      write(out, "(a)") "sorted matrix:"
+      write(out, "(" // columns // "f7.2)") (matrix(:, i), i = 1, rows)
    close(out)
+
+contains
+   pure subroutine SortMatrixRow(matrix_row, matrix_row_abs)
+      real(R_), intent(out) :: matrix_row(:), matrix_row_abs(:)
+      integer(I_)           :: i, min_index
+      real(R_)              :: tmp
+      ! Сортировка положительных элементов массива в порядке
+      ! возрастания (от меньшего к большему) методом выбора:
+      ! 1. Находим в неотсортированной части массива индекс минимального элемента.
+      ! 2. Меняем его с первым элементом в неотсортированной части
+      !    (если это не один и тот же элемент).
+      ! 3. Отсортированная часть увеличилась. Повторяем пп. 1-2.
+      do i = 1, Size(matrix_row_abs) - 1
+         ! MinLoc вернёт нам индекс относительно i, потому нам нужно
+         !  добавить к этому значению i и вычесть единицу.
+         min_index = MinLoc(matrix_row_abs(i:), 1) + i - 1
+
+         ! Если текущий индекс не является индексом минимального элемента.
+         ! (Мы пропускаем замену за ненадобностью, если это один и тот же элемент).
+         if (i /= min_index) then
+            ! Меняем местами текущий и минимальный на данной итерации элементы.
+            tmp                       = matrix_row_abs(i)
+            matrix_row_abs(i)         = matrix_row_abs(min_index)
+            matrix_row_abs(min_index) = tmp
+
+            tmp                   = matrix_row(i)
+            matrix_row(i)         = matrix_row(min_index)
+            matrix_row(min_index) = tmp
+         end if
+      end do
+   end subroutine SortMatrixRow
 
 end program SortMatrixRows
 
