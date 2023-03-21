@@ -37,18 +37,14 @@ contains
             end do
          end do
       end do
-      !  2. Вычисляем матрицу.
 
-      ! FIXME:
-      ! E - единичная матрица:
-      ! 1 0 0 0
-      ! 0 1 0 0
-      ! 0 0 1 0
-      ! 0 0 0 1
-      ! А не просто прибавление 1.0_R_, как я это сделал.
+      !  2. Добавляем единичную матрицу.
+      do i = 1, matrix_size
+         matrix(i,i) = matrix(i,i) + 1.0_R_
+      end do
 
-      ! С -O3 компилятор всё равно привёл бы деление на 2 к инструкции mulss.
-      matrix = 1.0_R_ + matrix + 0.5_R_ * multiplied
+      ! 3. Добавляем 1/2 * matrix^2.
+      matrix = matrix + 0.5_R_ * multiplied
    end subroutine Special_Case
 
 end module Norm2_Module
