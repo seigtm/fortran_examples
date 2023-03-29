@@ -45,7 +45,7 @@ program sort_students
    character(initials_length, kind=CH_)               :: initials_tmp = "", initials(students_count) = ""
    character(initials_length, kind=CH_), allocatable  :: initials_male(:), initials_female(:)
    
-   character(kind=CH_)                             :: gender(students_count) = ""
+   character(kind=CH_)                             :: genders(students_count) = ""
    
    integer                                         :: marks_tmp(marks_count) = 0, marks(students_count, marks_count) = 0
    integer, allocatable                            :: marks_male(:, :), marks_female(:, :), position_male(:), position_female(:)
