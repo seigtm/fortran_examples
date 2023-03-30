@@ -28,37 +28,58 @@
 !   Петрыкин И. И. М 4.32
 
 program sort_students
-   use Environment
+   use environment
 
    implicit none
 
-   integer, parameter               :: students_count = 18, surname_length = 15, initials_length = 5, marks_count = 5
-   character(kind=CH_), parameter   :: male = Char(1052, CH_)  ! CH__"\u1052" CH__"М"
+   integer(I_)                      :: i = 0
+   character(*),        parameter   :: input_file = "../data/input.txt", output_file = "output.txt"
+   integer,             parameter   :: students_count = 18, surname_length = 15, initials_length = 5
+   character(kind=CH_), parameter   :: citizen = char(1055, CH_), guest = char(1043, CH_)  ! 'П', 'Г'.
+   character(kind=CH_), allocatable :: surnames_guests(:, :), surnames_citizens(:, :)
+   character(kind=CH_), allocatable :: initials_guests(:, :), initials_citizens(:. :)
+   real(R_),            allocatable :: avg_marks_guests(:), avg_marks_citizens(:)
+   real(R_),            allocatable :: genders_citizens(:), genders_guests(:)
+   real(R_)                         :: avg_marks(students_count) = 0
+   character(kind=CH_)              :: surnames(students_count, surname_length) = "",  &
+      initials(students_count, initials_length) = "", &
+      genders(students_count) = "", &
+      registrations(students_count)
 
-   character(:), allocatable  :: input_file, output_file, format
 
-   ! Массивы фамилий, инициалов, полов, оценок и средних оценов и временные
-   ! переменные для обменов при сортировке.
-   character(surname_length, kind=CH_)                :: surname_tmp = "", surnames(students_count) = ""
-   character(surname_length, kind=CH_), allocatable   :: surnames_male(:), surnames_female(:)
-   
-   character(initials_length, kind=CH_)               :: initials_tmp = "", initials(students_count) = ""
-   character(initials_length, kind=CH_), allocatable  :: initials_male(:), initials_female(:)
-   
-   character(kind=CH_)                             :: genders(students_count) = ""
-   
-   integer                                         :: marks_tmp(marks_count) = 0, marks(students_count, marks_count) = 0
-   integer, allocatable                            :: marks_male(:, :), marks_female(:, :), position_male(:), position_female(:)
-   
-   real(R_)                                        :: avg_mark_tmp = 0, avg_marks(students_count) = 0
-   real(R_), allocatable                           :: avg_marks_male(:), avg_marks_female(:)
+   call read_students_list(  input_file,  surnames, initials, genders, registrations, avg_marks)
+   call output_students_list(output_file, surnames, initials, genders, registrations, avg_marks, "Исходный список:", "rewind")
 
-   logical, allocatable                            :: is_male(:), is_female(:)
-   integer                                         :: male_count = 0, female_count = 0
+   call get_list_by_registration(surnames, initials, genders, registrations, avg_marks, &
+      surnames_citizens, initials_citizens, genders_citizens, avg_marks_citizens, citizen)
+   call get_list_by_registration(surnames, initials, genders, registrations, avg_marks, &
+      surnames_guests, initials_guests,     genders_guests,   avg_marks_guests,   guest)
 
-   integer :: in, out, io, i, j
-   integer, parameter                              :: indexes(*) = [(i, i = 1, students_count)]
-   logical :: swap
+   call sort_students_list(surnames_citizens, initials_citizens, genders_citizens, avg_marks_citizens)
+   call sort_students_list(surnames_guests,   initials_guests,   genders_guests,   avg_marks_guests)
 
-   ! Code goes brrrr...
+   call output_students_list(output_file, surnames_citizens, initials_citizens, genders_citizens, &
+      [(citizen, i = 1, Size(avg_marks_citizens))], avg_marks_citizens, "Петербуржцы:",  "append")
+   call output_students_list(output_file, surnames_guests,   initials_guests,   genders_guests,   &
+      [(guest,   i = 1, Size(avg_marks_guests))],   avg_marks_guests,   "Гости города:", "append")
+
+contains
+   ! TODO: доделать эту подпрограмму и реализовать все прочие.
+   subroutine read_students_list()
+      character(*),        intent(in)  :: input_file
+      character(kind=CH_), intent(out) :: surnames(:, :), initials(:, :), genders(:), registrations(:)
+      real(R_),            intent(out) :: avg_marks(:)
+      integer(I_)                      :: in, io, i
+      character(:), allocatable        :: format
+
+      ! Чтение списка класса: фамилии, инициалы, пол, прописка и средний балл.
+      open(file=input_file, encoding=E_, newunit=in)
+      format = '(' // SURNAME_LEN // 'a1, 1x, ' // INITIALS_LEN // 'a1, 1x, a, 1x, ' // &
+         MARKS_AMOUNT // 'i1, f5.2)'
+      read (In, format, iostat=IO) (Surnames(i, :), Initials(i, :), Genders(i), Marks(i, :), Aver_Marks(i), &
+         i = 1, STUD_AMOUNT)
+      call Handle_IO_status(IO, "reading class list")
+      close (In)
+   end subroutine read_students_list
 end program sort_students
+
