@@ -32,7 +32,7 @@ program sort_students
 
    implicit none
 
-   integer, parameter               :: students_count = 18, surname_length = 16, initials_length = 5, gender_length = 1
+   integer, parameter               :: students_count = 18, surname_length = 15, initials_length = 5
    character(kind=CH_), parameter   :: citizen = char(1055, CH_)  ! 'П'
 
    character(:), allocatable  :: input_file, output_file, format
@@ -43,8 +43,8 @@ program sort_students
    character(initials_length, kind=CH_)               :: initials_tmp = "", initials(students_count) = ""
    character(initials_length, kind=CH_), allocatable  :: initials_guests(:), initials_citizens(:)
 
-   character(gender_length, kind=CH_)              :: gender_tmp = "", genders(students_count) = ""
-   character(gender_length, kind=CH_), allocatable :: genders_guests(:), genders_citizens(:)
+   character(kind=CH_)              :: gender_tmp = "", genders(students_count) = ""
+   character(kind=CH_), allocatable :: genders_guests(:), genders_citizens(:)
 
    character(kind=CH_)                             :: registrations(students_count) = ""
 
@@ -65,7 +65,7 @@ program sort_students
 
    ! Чтение списка класса: фамилии, инициалы, пол, прописка и средний балл.
    open(file=input_file, encoding=E_, newunit=in)
-   format = '(3(a, 1x), a, f5.2)'
+   format = '(4(a, 1x), f5.2)'
    read(in, format, iostat=io) (surnames(i), initials(i), genders(i), registrations(i), avg_marks(i), i = 1, students_count)
    close(in)
    ! Обработка статуса чтения.
@@ -76,7 +76,7 @@ program sort_students
     case(IOSTAT_END)
       write(out, *) "End of file has been reached while reading group list."
     case(1:)
-      write(out, *) "Error while reading group list: ", io  ! FIXME: Error while reading group list: 5010.
+      write(out, *) "Error while reading group list: ", io
     case default
       write(out, *) "Undetermined error has been reached while reading group list: ", io
    end select
@@ -85,8 +85,7 @@ program sort_students
    open(file=output_file, encoding=E_, newunit=out)
    write(out, '(a)') "Исходный список:"
    ! Пояснения к записи те же, что и к чтению.
-   write(out, format, iostat=IO) &
-      (surnames_citizens(i), initials_citizens(i), genders_citizens(i), "П", avg_marks_citizens(i), i = 1, citizen_count)
+   write(out, format, iostat=IO) (surnames(i), initials(i), genders(i), registrations(i), avg_marks(i), i = 1, students_count)
    close(out)
    ! Обработка статуса записи.
    out = OUTPUT_UNIT
