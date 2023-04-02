@@ -2,7 +2,7 @@ module environment
    use ISO_Fortran_Env
 
    implicit none
-
+    
    integer, parameter      :: I_ = INT32                             ! Разновидность типа для целочисленных переменных.
    integer, parameter      :: R_ = REAL32                            ! Разновидность типа для вещественных переменных.
    integer, parameter      :: C_ = R_                                ! Разновидность типа для компексных переменных.
@@ -39,13 +39,13 @@ contains
 
       open (ERROR_UNIT, encoding=E_)
       select case(IO)
-       case(0, IOSTAT_END, IOSTAT_EOR)
-       case(1:)
-         write (ERROR_UNIT, '(a, i0)') "Error " // where // ": ", IO
-       case default
-         write (ERROR_UNIT, '(a, i0)') "Undetermined behaviour has been reached while " // where // ": ", IO
+         case(0, IOSTAT_END, IOSTAT_EOR)
+         case(1:)
+            write (ERROR_UNIT, '(a, i0)') "Error " // where // ": ", IO
+         case default
+            write (ERROR_UNIT, '(a, i0)') "Undetermined behaviour has been reached while " // where // ": ", IO
       end select
-      ! close (ERROR_UNIT) ! Если не OUTPUT_UNIT, ERROR_UNIT.
+      ! close (Out) ! Если не OUTPUT_UNIT.
    end subroutine Handle_IO_status
 
 end module environment
