@@ -59,10 +59,10 @@ contains
       if(avg_marks(j) < avg_marks(j+1)) then
          should_swap = .true.
       else if(avg_marks(j) == avg_marks(j+1)) then
-         if (gt(surnames(j, :), surnames(j+1, :))) then
+         if (GT(surnames(j, :), surnames(j+1, :))) then
             should_swap = .true.
          else if(All(surnames(j, :) == surnames(j+1, :)) &
-            .and. gt(initials(j, :), initials(j+1, :))) then
+            .and. GT(initials(j, :), initials(j+1, :))) then
             should_swap = .true.
          end if
       end if
@@ -72,7 +72,7 @@ contains
       character(kind=CH_), intent(in) :: arr1(:), arr2(:)
       integer                         :: i
 
-! Поиск первого отличного символа или остановка на последнем символе.
+      ! Поиск первого отличного символа или остановка на последнем символе.
       do i = 1, Min(Size(arr1), Size(arr2)) - 1
          if (arr1(i) /= arr2(i)) &
             exit
