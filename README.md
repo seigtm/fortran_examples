@@ -22,8 +22,6 @@
 
 > Располагаются по пути [`fortran_examples/labs/2nd-algorithms-and-data-structures/`](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/).
 
-_Здесь пока пустовато, поскольку мне дали только вариант по первой работе..._
-
 * 1 работа выполняется 6-ю наборами средств (см. комментарии в каждом из файлов):
   * ✅ [1.2.1](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/1);
   * ✅ [1.2.2](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/2);
@@ -32,6 +30,10 @@ _Здесь пока пустовато, поскольку мне дали то
   * 📛 [1.2.4](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/4);
   * ⌛ [1.2.5](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/5);
   * 📛 [1.2.6](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/6);
+* 📛 2.2;
+* 📛 3.2;
+* 📛 4.2;
+* 📛 5.2.
 
 ## Опорные упражнения преподавателя (Фёдорова Станислава Алексеевича)
 
