@@ -34,7 +34,7 @@ contains
        format = '(' // surname_length // 'a1, 1x, ' // initials_length // 'a1, 1x, a, 1x, a, 1x, f5.2)'
        write(out, format, iostat=io) (surnames(i, :), initials(i, :), genders(i), registrations(i), avg_marks(i), &
           i = 1, UBound(avg_marks, 1))
-       call handle_io_status(io, "writing" // list_name)
+       call handle_io_status(io, "writing " // list_name)
        close(out)
     end subroutine output_students_list
 end module group_io
