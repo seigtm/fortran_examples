@@ -17,12 +17,12 @@ contains
    subroutine create_data_file(input_file, data_file)
       character(*), intent(in)   :: input_file, data_file
       type(student)              :: stud
-      integer                    :: in, out, io, i, recl
+      integer                    :: in, out, io, i, record_length
       character(:), allocatable  :: format
 
       open(file=input_file, encoding=E_, newunit=in)
-      recl = (surname_length + initials_length + 2)*CH_ + R_
-      open(file=data_file, form='unformatted', newunit=out, access='direct', recl=recl)
+      record_length = (surname_length + initials_length + 2)*CH_ + R_
+      open(file=data_file, form='unformatted', newunit=out, access='direct', recl=record_length)
          format = '(4(a, 1x), f5.2)'
          do i = 1, students_count
             read(in, format, iostat=io) stud
@@ -38,10 +38,10 @@ contains
    function read_students_list(data_file) result(group)
       type(student)            :: group(students_count)
       character(*), intent(in) :: data_file
-      integer                  :: in, io, recl
+      integer                  :: in, io, record_length
       
-      recl = ((surname_length + initials_length + 2)*CH_ + R_) * students_count
-      open(file=data_file, form='unformatted', newunit=in, access='direct', recl=recl)
+      record_length = ((surname_length + initials_length + 2)*CH_ + R_) * students_count
+      open(file=data_file, form='unformatted', newunit=in, access='direct', recl=record_length)
          read(in, iostat=io, rec=1) group
          call handle_io_status(io, "reading unformatted class list")
       close(in)
