@@ -44,6 +44,8 @@ program sort_students
    group = read_students_list(data_file)
    call output_students_list(output_file, group, "Исходный список:", "rewind")
 
+   ! Создание массивов граждан и гостей города путём фильтрации из списка
+   !  "group" с помощью функции "Pack".
    citizens = Pack(group, group%registration == citizen)
    guests   = Pack(group, group%registration == guest)
 
