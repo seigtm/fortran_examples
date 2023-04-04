@@ -4,3 +4,4 @@ output.txt
 .vscode
 app
 *.swp
+*.dat
