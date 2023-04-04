@@ -55,7 +55,7 @@ contains
       integer(I_),         intent(in) :: j
 
       should_swap = .false.
-! Проверка на то, стоит ли менять учащихся местами.
+      ! Проверка на то, стоит ли менять учащихся местами.
       if(avg_marks(j) < avg_marks(j+1)) then
          should_swap = .true.
       else if(avg_marks(j) == avg_marks(j+1)) then
