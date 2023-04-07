@@ -28,7 +28,7 @@
     * ✅ [1.2.2_regular - версия с регулярным доступом к памяти](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/2_regular);
   * ✅ [1.2.3](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/3);
   * 📛 [1.2.4](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/4);
-  * ⌛ [1.2.5](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/5);
+  * ✅ [1.2.5](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/5);
   * 📛 [1.2.6](https://github.com/seigtm/fortran_examples/tree/master/labs/2nd-algorithms-and-data-structures/1.2/6);
 * 📛 2.2;
 * 📛 3.2;
