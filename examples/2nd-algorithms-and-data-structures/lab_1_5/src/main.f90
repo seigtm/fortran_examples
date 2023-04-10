@@ -1,36 +1,47 @@
 ! Copyright 2015 Fyodorov S. A.
-
-program reference_lab_1_5
+  
+program reference_lab_1_4
    use Environment
    use Group_Process
    use Group_IO
 
    implicit none
-   character(:), allocatable :: input_file, output_file
+   character(:), allocatable :: input_file, output_file, data_file
    character(kind=CH_), parameter   :: MALE = Char(1052, CH_), FEMALE = Char(1046, CH_)
-   ! MALE = 4_"М"
-   ! MALE = "М"
-   type(student), pointer  :: Group_List => Null(), Boys_List => Null(), Girls_List => Null()
-   integer(I_)             :: Boys_Amount = 0, Girls_Amount = 0
+   
+   type(student)              :: Group(STUD_AMOUNT)
+   type(student), allocatable :: Boys(:), Girls(:)
+   integer                    :: i ! По стандарту можно заводить прямо в do concurrent.
 
    input_file  = "../data/class.txt"
    output_file = "output.txt"
+   data_file   = "class.dat"
    
-   Group_List => Read_class_list(input_file)
-
-   if (Associated(Group_List)) then
-      call Output_class_list(output_file, Group_List, "Исходный список:", "rewind")
-
-      call Get_list_by_gender(Group_List, Boys_List, Boys_Amount, MALE)
-      call Get_list_by_gender(Group_List, Girls_List, Girls_Amount, FEMALE)
+   call Create_data_file(input_file, data_file)
    
-      call Sort_class_list(Boys_List, Boys_Amount)
-      call Sort_class_list(Girls_List, Girls_Amount)
-   
-      if (Associated(Boys_List)) &
-         call Output_class_list(output_file, Boys_List, "Успеваемость юношей:", "append")
-      if (Associated(Girls_List)) &
-         call Output_class_list(output_file, Girls_List, "Успеваемость девушек:", "append")
-   end if
+   Group = Read_class_list(data_file)
 
-end program reference_lab_1_5
+   call Output_class_list(output_file, Group, "Исходный список:", "rewind")
+
+   Boys  = Pack(Group, Group%Sex == MALE)
+   Girls = Pack(Group, Group%Sex == FEMALE)
+
+   ! Вычисление средней оценки для каждого юноши.
+   do concurrent (i = 1:Size(Boys))
+      Boys(i)%Aver_mark = Real(Sum(Boys(i)%Marks), R_) / MARKS_AMOUNT
+   end do
+   ! Переменную i можно заводить прямо тут.
+   !do concurrent (integer :: i = 1:Size(Boys))
+   
+   ! Вычисление средней оценки для каждой левушки.
+   do concurrent (i = 1:Size(Girls))
+      Girls(i)%Aver_mark = Real(Sum(Girls(i)%Marks), R_) / MARKS_AMOUNT
+   end do
+   
+   call Sort_class_list(Boys, Size(Boys))
+   call Sort_class_list(Girls, Size(Girls))
+
+   call Output_class_list(output_file, Boys, "Успеваемость юношей:", "append")
+   call Output_class_list(output_file, Girls, "Успеваемость девушек:", "append")
+
+end program reference_lab_1_4
