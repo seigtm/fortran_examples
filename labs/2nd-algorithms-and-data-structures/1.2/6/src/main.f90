@@ -39,7 +39,7 @@ program sort_students
    input_file  = "../data/input.txt"
    output_file = "output.txt"
 
-   group_list => read_group_list(input_file)
+   group_list => read_students_list(input_file)
 
    if(Associated(group_list)) then
       call output_students_list(output_file, group_list, "Исходный список:", "rewind")
@@ -47,8 +47,8 @@ program sort_students
       call get_list_by_registration(group_list, citizen_list, citizen_count, citizen)
       call get_list_by_registration(group_list, guest_list,   guest_count,   guest)
 
-      call sort_students_list(citizen_list, citizen_count)
-      call sort_students_list(guest_list,   guest_count)
+      call sort_student_list(citizen_list, citizen_count)
+      call sort_student_list(guest_list,   guest_count)
 
       if(Associated(citizen_list)) &
          call output_students_list(output_file, citizen_list, "Петербуржцы:",  "append")
