@@ -37,7 +37,7 @@ contains
       format = '(4(a, 1x), f5.2)'
       read(in, format, iostat=io) stud%surname, stud%initials, stud%sex, stud%registration, stud%avg_mark
       call handle_io_status(io, "reading line from file")
-      if (io == 0) then
+      if(io == 0) then
           stud%next => read_student(In)
       else
          deallocate(stud)
