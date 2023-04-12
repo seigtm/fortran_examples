@@ -26,37 +26,40 @@
 !   Петрыкин И. И. М 4.32
 
 program sort_students
-   use Environment
-
+   use environment
+   use group_process
+   use group_io
    implicit none
 
-   integer, parameter               :: students_count = 18, surname_length = 15, initials_length = 5, marks_count = 5
-   character(kind=CH_), parameter   :: male = Char(1052, CH_)  ! CH__"\u1052" CH__"М"
+   character(:),        allocatable :: input_file, output_file, data_file
+   character(kind=CH_), parameter   :: citizen = char(1055, CH_), guest = char(1057, CH_)  ! 'П', 'С'.
+   type(students)                   :: group
+   type(students),      allocatable :: citizens, guests
 
-   character(:), allocatable  :: input_file, output_file, format
+   input_file  = "../data/input.txt"
+   output_file = "output.txt"
+   data_file   = "input.dat"
 
-   ! Массивы фамилий, инициалов, полов, оценок и средних оценов и временные
-   ! переменные для обменов при сортировке.
-   character(surname_length, kind=CH_)                :: surname_tmp = "", surnames(students_count) = ""
-   character(surname_length, kind=CH_), allocatable   :: surnames_male(:), surnames_female(:)
-   
-   character(initials_length, kind=CH_)               :: initials_tmp = "", initials(students_count) = ""
-   character(initials_length, kind=CH_), allocatable  :: initials_male(:), initials_female(:)
-   
-   character(kind=CH_)                             :: genders(students_count) = ""
-   
-   integer                                         :: marks_tmp(marks_count) = 0, marks(students_count, marks_count) = 0
-   integer, allocatable                            :: marks_male(:, :), marks_female(:, :), position_male(:), position_female(:)
-   
-   real(R_)                                        :: avg_mark_tmp = 0, avg_marks(students_count) = 0
-   real(R_), allocatable                           :: avg_marks_male(:), avg_marks_female(:)
+   call create_data_file(input_file, data_file)
+   group = read_students_list(data_file)
+   call output_students_list(output_file, group, "Исходный список:", "rewind")
 
-   logical, allocatable                            :: is_male(:), is_female(:)
-   integer                                         :: male_count = 0, female_count = 0
+   ! Создание списков граждан и гостей города путём фильтрации из списка
+   !  "group" с помощью функции "Pack".
+   citizens%surname      = Pack(group%surname,      group%registration == citizen)
+   guests%surname        = Pack(group%surname,      group%registration == guest)
+   citizens%initials     = Pack(group%initials,     group%registration == citizen)
+   guests%initials       = Pack(group%initials,     group%registration == guest)
+   citizens%sex          = Pack(group%sex,          group%registration == citizen)
+   guests%sex            = Pack(group%sex,          group%registration == guest)
+   citizens%registration = Pack(group%registration, group%registration == citizen)
+   guests%registration   = Pack(group%registration, group%registration == guest)
+   citizens%avg_mark     = Pack(group%avg_mark,     group%registration == citizen)
+   guests%avg_mark       = Pack(group%avg_mark,     group%registration == guest)
 
-   integer :: in, out, io, i, j
-   integer, parameter                              :: indexes(*) = [(i, i = 1, students_count)]
-   logical :: swap
+   call sort_students_list(citizens)
+   call sort_students_list(guests)
 
-   ! Code goes brrrr...
+   call output_students_list(output_file, citizens, "Петербуржцы:",  "append")
+   call output_students_list(output_file, guests,   "Гости города:", "append")
 end program sort_students
