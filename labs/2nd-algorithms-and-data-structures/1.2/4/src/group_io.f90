@@ -6,62 +6,55 @@ module group_io
    integer, parameter :: students_count = 18, surname_length = 15, initials_length = 5
    ! Структура данных для хранения данных о студентах.
    type students
-      character(surname_length,  kind=CH_) :: surname     (students_count) = ""
-      character(initials_length, kind=CH_) :: initials    (students_count) = ""
-      character(kind=CH_)                  :: sex         (students_count) = ""
-      character(kind=CH_)                  :: registration(students_count) = ""
-      real(R_)                             :: avg_mark    (students_count) = 0
-   end type students
-
-contains
-   ! Создание неформатированного файла данных.
-   subroutine create_data_file(input_file, data_file)
-      character(*), intent(in)             :: input_file, data_file
       character(surname_length,  kind=CH_) :: surname     (students_count)
       character(initials_length, kind=CH_) :: initials    (students_count)
       character(kind=CH_)                  :: sex         (students_count)
       character(kind=CH_)                  :: registration(students_count)
       real(R_)                             :: avg_mark    (students_count)
-      integer                              :: in, out, io, i
-      character(:), allocatable            :: format
+   end type students
 
-      ! Открытие файла для чтения.
+contains
+   ! Создание неформатированного файла данных.
+   subroutine create_data_file(input_file, data_file)
+      character(*), intent(in)  :: input_file, data_file
+      integer(I_)               :: in, out, io, i
+      character(:), allocatable :: format
+      type(students)            :: group
+
       open(file=input_file, encoding=E_, newunit=in)
-      ! Формат для чтения из файла.
-      format = '(4(a, 1x), f5.2)'
-      read(in, format, iostat=io) (surname(i), initials(i), sex(i), registration(i), avg_mark(i), i = 1, students_count)
+      format = '(4(a, 1x), f5.2)'  ! Формат для чтения из файла.
+      read(in, format, iostat=io) (group%surname(i), group%initials(i), group%sex(i), &
+        group%registration(i), group%avg_mark(i), i = 1, students_count)
       call handle_io_status(io, "reading formatted class list, line " // i)
       close(in)
 
-      ! Открытие файла для записи данных.
       open(file=data_file, form='unformatted', newunit=out, access='stream')
-      write(out, iostat=io) surname(:), initials(:), sex(:), registration(:), avg_mark(:)
+      write(out, iostat=io) group%surname, group%initials, group%sex, group%registration, group%avg_mark
       call handle_io_status(io, "creating unformatted file with class list")
       close(out)
    end subroutine create_data_file
 
    ! Чтение списка класса: фамилии, инициалы, полы, прописки и оценки.
    type(students) function read_students_list(data_file) result(group)
-      character(*), intent(in) :: data_file ! Имя файла.
-      integer                  :: in, io, record_length
+      character(*), intent(in) :: data_file
+      integer(I_)              :: in, io
 
-      ! Размер записи данных в файле.
-      record_length = ((surname_length + initials_length + 2)*CH_ + R_) * students_count
-      ! Открытие файла в двоичном режиме, с указанием размера записи и количества записей в файле.
-      open(file=data_file, form='unformatted', newunit=in, access='direct', recl=record_length)
-      ! Чтение записи из файла с указанным номером и сохранение ее в массиве group.
-      read(in, iostat=io, rec=1) group
-      ! Проверка статуса операции чтения из файл.
+      open(file=data_file, form='unformatted', newunit=in, access='stream')
+      read(in, iostat=io) group%surname,      &
+                          group%initials,     &
+                          group%sex,          &
+                          group%registration, &
+                          group%avg_mark
       call handle_io_status(io, "reading unformatted class list")
-      ! Закрытие файла.
       close(in)
    end function read_students_list
 
    ! Вывод списка класса.
-   subroutine output_students_list(output_file, group, list_name, position)
+   subroutine output_students_list(output_file, group, list_name, position, count)
       character(*),   intent(in) :: output_file, list_name, position  ! Имена файла и списка, позиция.
       type(students), intent(in) :: group
-      integer                    :: out, io, i
+      integer(I_),    intent(in) :: count
+      integer(I_)                :: out, io, i
       character(:), allocatable  :: format
 
       ! Открытие файла на запись с указанием позиции курсора в файле.
@@ -76,10 +69,8 @@ contains
                                      group%sex(i),          &
                                      group%registration(i), &
                                      group%avg_mark(i),     &
-                                     i = 1, Size(group%surname))
-      ! Проверка статуса операции записи в файл.
+                                     i = 1, count)
       call handle_io_status(io, "writing " // list_name)
-      ! Закрытие файла.
       close(out)
    end subroutine output_students_list
 end module group_io

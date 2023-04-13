@@ -33,8 +33,8 @@ program sort_students
 
    character(:),        allocatable :: input_file, output_file, data_file
    character(kind=CH_), parameter   :: citizen = char(1055, CH_), guest = char(1057, CH_)  ! 'П', 'С'.
-   type(students)                   :: group
-   type(students),      allocatable :: citizens, guests
+   type(students)                   :: group, citizens, guests
+   integer(I_)                      :: citizen_count, guest_count
 
    input_file  = "../data/input.txt"
    output_file = "output.txt"
@@ -42,10 +42,11 @@ program sort_students
 
    call create_data_file(input_file, data_file)
    group = read_students_list(data_file)
-   call output_students_list(output_file, group, "Исходный список:", "rewind")
+   call output_students_list(output_file, group, "Исходный список:", "rewind", students_count)
 
-   ! Создание списков граждан и гостей города путём фильтрации из списка
-   !  "group" с помощью функции "Pack".
+   citizen_count = Count(group%registration == citizen)
+   guest_count   = Count(group%registration == guest)
+
    citizens%surname      = Pack(group%surname,      group%registration == citizen)
    guests%surname        = Pack(group%surname,      group%registration == guest)
    citizens%initials     = Pack(group%initials,     group%registration == citizen)
@@ -60,6 +61,6 @@ program sort_students
    call sort_students_list(citizens)
    call sort_students_list(guests)
 
-   call output_students_list(output_file, citizens, "Петербуржцы:",  "append")
-   call output_students_list(output_file, guests,   "Гости города:", "append")
+   call output_students_list(output_file, citizens, "Петербуржцы:",  "append", citizen_count)
+   call output_students_list(output_file, guests,   "Гости города:", "append", guest_count)
 end program sort_students
