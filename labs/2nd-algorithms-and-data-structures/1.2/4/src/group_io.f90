@@ -29,7 +29,7 @@ contains
       close(in)
 
       open(file=data_file, form='unformatted', newunit=out, access='stream')
-      write(out, iostat=io) group%surname, group%initials, group%sex, group%registration, group%avg_mark
+      write(out, iostat=io) group
       call handle_io_status(io, "creating unformatted file with class list")
       close(out)
    end subroutine create_data_file
@@ -40,11 +40,7 @@ contains
       integer(I_)              :: in, io
 
       open(file=data_file, form='unformatted', newunit=in, access='stream')
-      read(in, iostat=io) group%surname,      &
-                          group%initials,     &
-                          group%sex,          &
-                          group%registration, &
-                          group%avg_mark
+      read(in, iostat=io) group
       call handle_io_status(io, "reading unformatted class list")
       close(in)
    end function read_students_list
