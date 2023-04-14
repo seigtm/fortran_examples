@@ -27,8 +27,8 @@ contains
       ! Если ещё остались студенты, сканируем дальше, а в создаваемом списке передаём ПРЕЖНЕЕ место.
       else if (Associated(Stud%next)) then
          call Get_list_by_gender(Stud%next, List, Amount, Gender)
-	  else
-	     List => Null()
+      else
+	 List => Null()  ! Зачем мы делаем это?
       end if
 
    end subroutine Get_list_by_gender
