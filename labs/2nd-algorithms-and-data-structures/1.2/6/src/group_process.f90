@@ -23,8 +23,8 @@ contains
       ! Если ещё остались студенты, сканируем дальше, а в создаваемом списке передаём ПРЕЖНЕЕ место.
       else if(Associated(stud%next)) then
          call get_list_by_registration(stud%next, list, amount, registration)
-     else
-        list => Null()
+      else
+         list => Null()
       end if
    end subroutine get_list_by_registration
 
