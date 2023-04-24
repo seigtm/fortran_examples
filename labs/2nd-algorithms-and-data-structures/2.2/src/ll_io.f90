@@ -16,7 +16,7 @@ contains
       integer(I_)               :: in
 
       open(file=input_file, newunit=in, encoding=E_)
-        call read_value(in, list)
+      call read_value(in, list)
       close(in)
    end function read_list
 
@@ -43,8 +43,8 @@ contains
       integer                   :: out
 
       open(file=output_file, position=position, newunit=out)
-         write(out, '(/a)') list_name
-         call output_value(out, list)
+      write(out, '(/a)') list_name
+      call output_value(out, list)
       close(out)
    end subroutine output_list
 
@@ -65,7 +65,7 @@ contains
       integer                  :: out
 
       open(file=output_file, position=position, newunit=out)
-         write(out, '(/a/)') message
+      write(out, '(/a/)') message
       close(out)
    end subroutine output_result
 end module ll_io
