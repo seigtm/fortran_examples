@@ -21,8 +21,6 @@ contains
       type(node), allocatable, intent(in) :: alphabet
       character(kind=CH_),     intent(in) :: ch
 
-      write(*,*) alphabet%value, ch
-
       if(alphabet%value == ch) then
          res = .true.
       else if(allocated(alphabet%next)) then
