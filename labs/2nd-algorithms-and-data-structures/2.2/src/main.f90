@@ -39,12 +39,12 @@ program ll
       call check_string(list, alphabet, ascii_code)
 
       if(ascii_code == list_size) then
-         call output_result(output_file, "Исходный список содержит символы, которые &
-            не присутствуют в алфавите. Номер первого не найденного символа &
-            в исходной строке = " // ascii_code // "!", "append")
+         call output_result(output_file, "Исходный список содержит символы, "  // &
+            "которые не присутствуют в алфавите. Номер первого "               // &
+            "не найденного символа в исходной строке = " // ascii_code // "!", "append")
       else
-         call output_result(output_file, "Исходный список состоит исключительно &
-            из символов алфавита!", "append")
+         call output_result(output_file, "Исходный список состоит исключительно" // &
+            "из символов алфавита!", "append")
       end if
    end if
 end program ll
