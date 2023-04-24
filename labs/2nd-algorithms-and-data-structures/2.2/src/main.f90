@@ -18,7 +18,7 @@ program ll
    implicit none
 
    character(:), allocatable :: input_file_list, input_file_alphabet, output_file
-   type(node),   pointer     :: list  => null(), alphabet => null()
+   type(node),   allocatable :: list, alphabet
    integer(I_)               :: list_size, ascii_code
 
    input_file_list     = "../data/list.txt"      ! Путь до входного файла с исходной строкой - A(M).
@@ -26,14 +26,14 @@ program ll
    output_file         = "output.txt"            ! Путь до выходного файла.
 
    ! Считываем строки A(M) - исходная и B(L) - алфавит.
-   list     => read_list(input_file_list)
-   alphabet => read_list(input_file_alphabet)
+   list     = read_list(input_file_list)
+   alphabet = read_list(input_file_alphabet)
 
    ! Устанавливаем по умолчанию ascii code == M+1.
    list_size = 13  ! FIXME: наверное всё же определяй размер непосредственно в функции read_list().
    ascii_code = list_size + 1
 
-   if(associated(list) .and. associated(alphabet)) then
+   if(allocated(list) .and. allocated(alphabet)) then
       call output_list(output_file, list,     "Исходный список:",  "rewind")
       call output_list(output_file, alphabet, "Исходный алфавит:", "append")
       call check_string(list, alphabet, ascii_code)
