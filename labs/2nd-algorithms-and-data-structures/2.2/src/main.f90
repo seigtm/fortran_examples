@@ -19,29 +19,25 @@ program ll
 
    character(:), allocatable :: input_file_list, input_file_alphabet, output_file
    type(node),   allocatable :: list, alphabet
-   integer(I_)               :: list_size, ascii_code
+   integer(I_)               :: list_size, alphabet_size, in_alphabet_counter
 
    input_file_list     = "../data/list.txt"      ! Путь до входного файла с исходной строкой - A(M).
    input_file_alphabet = "../data/alphabet.txt"  ! Путь до входного файла с алфавитом - B(L).
    output_file         = "output.txt"            ! Путь до выходного файла.
 
    ! Считываем строки A(M) - исходная и B(L) - алфавит.
-   list     = read_list(input_file_list)
-   alphabet = read_list(input_file_alphabet)
-
-   ! Устанавливаем по умолчанию ascii code == M+1.
-   list_size = 13  ! FIXME: наверное всё же определяй размер непосредственно в функции read_list().
-   ascii_code = list_size + 1
+   list     = read_list(input_file_list,     list_size)
+   alphabet = read_list(input_file_alphabet, alphabet_size)
 
    if(allocated(list) .and. allocated(alphabet)) then
       call output_list(output_file, list,     "Исходный список:",  "rewind")
       call output_list(output_file, alphabet, "Исходный алфавит:", "append")
-      call check_string(list, alphabet, ascii_code)
+      in_alphabet_counter = in_alphabet(list, alphabet)
 
-      if(ascii_code == list_size) then
+      if(in_alphabet_counter /= list_size + 1) then
          call output_result(output_file, "Исходный список содержит символы, "  // &
             "которые не присутствуют в алфавите. Номер первого "               // &
-            "не найденного символа в исходной строке = " // ascii_code // "!", "append")
+            "не найденного символа в исходной строке = " // in_alphabet_counter // "!", "append")
       else
          call output_result(output_file, "Исходный список состоит исключительно " // &
             "из символов алфавита!", "append")

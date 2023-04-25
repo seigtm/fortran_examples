@@ -4,19 +4,24 @@ module ll_process
    implicit none
 
 contains
-   pure recursive subroutine check_string(list, alphabet, result)
+   ! Чистая функция проверки того, что строка list состоит только из символов
+   !  алфавита alphabet.
+   ! Возвращает номер символа в исходной строке не найденного в алфавите,
+   !  либо размер исходной строки + 1, если все символы содержатся в алфавите.
+   ! Пометка: номер символа использует индексацию с единицы. Такой подход
+   !  упрощает нам ситуацию, когда мы должны вернуть размер исходной строки + 1.
+   pure recursive integer(I_) function in_alphabet(list, alphabet) result(res)
       type(node), allocatable, intent(in) :: list, alphabet
-      integer(I_),         intent(inout)  :: result
+      res = 1
 
-      if(allocated(list)) then
-         if(contains(alphabet, list%value)) then
-            call check_string(list%next, alphabet, result)
-         else
-            result = ichar(list%value)
-         end if
-      endif
-   end subroutine check_string
+      if(allocated(list) .and. contains(alphabet, list%value)) &
+         res = in_alphabet(list%next, alphabet) + 1
+   end function in_alphabet
 
+   ! Вспомогательная рекурсивная функция, которая непосредственно
+   !  проверяет включение символа ch в алфавит alphabet.
+   ! Возвращает true, если символ содержится в алфавите
+   !  и false в обратном случае.
    pure recursive logical function contains(alphabet, ch) result(res)
       type(node), allocatable, intent(in) :: alphabet
       character(kind=CH_),     intent(in) :: ch

@@ -10,27 +10,31 @@ module ll_io
 
 contains
    ! Чтение списка.
-   function read_list(input_file) result(list)
-      type(node),   allocatable :: list
-      character(*), intent(in)  :: input_file
-      integer(I_)               :: in
+   function read_list(input_file, size) result(list)
+      type(node),   allocatable   :: list
+      character(*), intent(in)    :: input_file
+      integer(I_),  intent(inout) :: size
+      integer(I_)                 :: in
+      size = 0
 
       open(file=input_file, newunit=in, encoding=E_)
-      call read_value(in, list)
+      call read_value(in, list, size)
       close(in)
    end function read_list
 
    ! Чтение следующего значения.
-   recursive subroutine read_value(in, elem)
-      type(node), allocatable :: elem
-      integer, intent(in)     :: in
-      integer                 :: io
+   recursive subroutine read_value(in, elem, size)
+      type(node),  allocatable   :: elem
+      integer(I_), intent(inout) :: size
+      integer(I_), intent(in)    :: in
+      integer                    :: io
 
       allocate(elem)
       read(in, '(a1)', iostat=io, advance='no') elem%value
       call handle_io_status(io, "reading value from file")
       if(io == 0) then
-         call read_value(in, elem%next)
+         size = size + 1
+         call read_value(in, elem%next, size)
       else
          deallocate(elem)
       end if
