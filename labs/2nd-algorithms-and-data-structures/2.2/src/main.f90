@@ -29,7 +29,7 @@ program ll
    list     = read_list(input_file_list,     list_size)
    alphabet = read_list(input_file_alphabet, alphabet_size)
 
-   if(allocated(list) .and. allocated(alphabet)) then
+   if(allocated(list) .and. allocated(alphabet) .and. list_size /= 0 .and. alphabet_size /= 0) then
       call output_list(output_file, list,     "Исходный список:",  "rewind")
       call output_list(output_file, alphabet, "Исходный алфавит:", "append")
       in_alphabet_counter = in_alphabet(list, alphabet)
