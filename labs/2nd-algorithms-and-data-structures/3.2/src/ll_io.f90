@@ -76,7 +76,7 @@ contains
       inquire(unit=in, size=size)  ! Получаем размер файла.
 
       open(file=output_file, encoding=E_, position='rewind', newunit=out)
-      write(out, '(/a)') list_name
+      write(out, '(a/)') list_name
 
       do i=1, size / record_length
          read(in, iostat=io) elem
