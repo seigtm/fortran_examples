@@ -11,26 +11,20 @@
 
 program ll
    use environment
-   use ll_process
    use ll_io
    implicit none
 
-   character(:), allocatable :: input_file, output_file
-   type(person_node_t), allocatable :: dynamic_string
+   character(:),        allocatable :: input_file, output_file, data_file
+   type(person_node_t), allocatable :: list
 
    input_file  = "../data/list.txt"
    output_file = "output.txt"
+   data_file   = "binary.dat"
 
-   ! 1. "Текстовый файл F1 -> динамическая строка":
-   dynamic_string = read_list(input_file)
-   if(allocated(dynamic_string)) then
-      call output_list(output_file, dynamic_string, "Исходный список:", "rewind")
-
-      ! 2. "Динамическая строка -> типизированный файл F2":
-      call list_to_data_file(data_file, dynamic_string)
-
-      ! 3. "Типизированный файл F2 -> output":
-      call output_list_from_data_file(data_file, output_file, "Список из типизированного файла:", "append")
+   list = read_list(input_file)
+   if(allocated(list)) then
+      call create_data_file(list, data_file)
+      call output(output_file, data_file, "Список:")
+      call deallocate_list(list)
    end if
-
 end program ll
