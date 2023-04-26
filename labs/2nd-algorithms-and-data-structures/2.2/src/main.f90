@@ -19,7 +19,7 @@ program ll
 
    character(:), allocatable :: input_file_list, input_file_alphabet, output_file
    type(node),   allocatable :: list, alphabet
-   integer(I_)               :: list_size, alphabet_size, in_alphabet_counter
+   integer(I_)               :: list_size, alphabet_size, index
 
    input_file_list     = "../data/list.txt"      ! Путь до входного файла с исходной строкой - A(M).
    input_file_alphabet = "../data/alphabet.txt"  ! Путь до входного файла с алфавитом - B(L).
@@ -32,12 +32,12 @@ program ll
    if(allocated(list) .and. allocated(alphabet) .and. list_size /= 0 .and. alphabet_size /= 0) then
       call output_list(output_file, list,     "Исходный список:",  "rewind")
       call output_list(output_file, alphabet, "Исходный алфавит:", "append")
-      in_alphabet_counter = in_alphabet(list, alphabet)
+      index = in_alphabet(list, alphabet)
 
-      if(in_alphabet_counter /= list_size + 1) then
+      if(index /= list_size + 1) then
          call output_result(output_file, "Исходный список содержит символы, "  // &
             "которые не присутствуют в алфавите. Номер первого "               // &
-            "не найденного символа в исходной строке = " // in_alphabet_counter // "!", "append")
+            "не найденного символа в исходной строке = " // index // "!", "append")
       else
          call output_result(output_file, "Исходный список состоит исключительно " // &
             "из символов алфавита!", "append")
