@@ -8,12 +8,15 @@ contains
    !  алфавита alphabet.
    ! Возвращает номер символа в исходной строке не найденного в алфавите,
    !  либо размер исходной строки + 1, если все символы содержатся в алфавите.
-   pure recursive integer(I_) function in_alphabet(list, alphabet) result(res)
+   pure recursive integer(I_) function in_alphabet(list, alphabet, res) result(count)
       type(node), allocatable, intent(in) :: list, alphabet
-      res = 1
+      integer(I_),             intent(in) :: res
 
-      if(allocated(list) .and. contains(alphabet, list%value)) &
-         res = in_alphabet(list%next, alphabet) + 1
+      if(allocated(list) .and. contains(alphabet, list%value)) then
+         count = in_alphabet(list%next, alphabet, res) + 1
+      else
+         count = res
+      end if
    end function in_alphabet
 
    ! Вспомогательная рекурсивная функция, которая непосредственно
