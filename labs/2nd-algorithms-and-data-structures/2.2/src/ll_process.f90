@@ -13,7 +13,7 @@ contains
       integer(I_),             intent(in) :: res
 
       if(allocated(list) .and. contains(alphabet, list%value)) then
-         count = in_alphabet(list%next, alphabet, res) + 1
+        count = in_alphabet(list%next, alphabet, res + 1)
       else
          count = res
       end if
