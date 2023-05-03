@@ -30,7 +30,7 @@ program sort_students
 
    implicit none
 
-   integer, parameter               :: students_count = 18, surname_length = 15, initials_length = 5
+   integer, parameter               :: students_count = 8500, surname_length = 15, initials_length = 5
    character(kind=CH_), parameter   :: citizen = char(1055, CH_)  ! 'П'
 
    character(:), allocatable  :: input_file, output_file, format
@@ -101,7 +101,7 @@ program sort_students
    ! Составление логической маски, соответствующей жителям.
    is_citizen    = registrations == citizen
    citizen_count = Count(is_citizen)
-   ! Получение массивов, связынных с жителями.
+   ! Получение массивов, связанных с жителями.
    ! Использование массива номеров жителей в списке.
    position_citizens = Pack(indexes, is_citizen)  ! == [1, 2, 3]
    allocate(surnames_citizens(citizen_count), initials_citizens(citizen_count), &
@@ -117,7 +117,7 @@ program sort_students
    ! Составление логической маски, соответствующей гостям.
    is_guest    = .not. is_citizen
    guest_count = students_count - citizen_count
-   ! Получение массивов, связынных с гостями.
+   ! Получение массивов, связанных с гостями.
    ! Использование массива номеров гостей в списке.
    position_guests = Pack(indexes, is_guest)  ! == [4, 5]
    allocate(surnames_guests(guest_count), initials_guests(guest_count), &
