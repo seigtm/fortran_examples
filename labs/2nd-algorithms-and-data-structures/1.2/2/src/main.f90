@@ -43,10 +43,16 @@ program sort_students
       initials(students_count, initials_length) = "", &
       genders(students_count) = "", &
       registrations(students_count)
+   ! Variables for timing.
+   integer(I_) :: start(8)
+   real(R_)    :: time_used
 
    call read_students_list(  input_file,  surnames, initials, genders, registrations, avg_marks)
    call output_students_list(output_file, surnames, initials, genders, registrations, avg_marks, &
       "Исходный список:", "rewind")
+
+   ! Timing starts here.
+   call date_and_time(values=start)
 
    call get_list_by_registration(surnames, initials, genders, registrations, avg_marks, &
       surnames_citizens, initials_citizens, genders_citizens, avg_marks_citizens, citizen)
@@ -55,6 +61,10 @@ program sort_students
 
    call sort_students_list(surnames_citizens, initials_citizens, genders_citizens, avg_marks_citizens)
    call sort_students_list(surnames_guests,   initials_guests,   genders_guests,   avg_marks_guests)
+
+   ! Timing ends here.
+   call elapsed_time(time_used, start)
+   write(*,*) "Elapsed time in milliseconds = ", time_used
 
    call output_students_list(output_file, surnames_citizens, initials_citizens, genders_citizens, &
       [(citizen, i = 1, Size(avg_marks_citizens))], avg_marks_citizens, "Петербуржцы:",  "append")

@@ -35,6 +35,9 @@ program sort_students
    character(kind=CH_), parameter   :: citizen = char(1055, CH_), guest = char(1057, CH_)  ! 'П', 'С'.
    type(students)                   :: group, citizens, guests
    integer(I_)                      :: citizen_count, guest_count
+   ! Variables for timing.
+   integer(I_) :: start(8)
+   real(R_)    :: time_used
 
    input_file  = "../data/input.txt"
    output_file = "output.txt"
@@ -43,6 +46,9 @@ program sort_students
    call create_data_file(input_file, data_file)
    group = read_students_list(data_file)
    call output_students_list(output_file, group, "Исходный список:", "rewind", students_count)
+
+   ! Timing starts here.
+   call date_and_time(values=start)
 
    citizen_count = Count(group%registration == citizen)
    guest_count   = Count(group%registration == guest)
@@ -60,6 +66,10 @@ program sort_students
 
    call sort_students_list(citizens)
    call sort_students_list(guests)
+
+   ! Timing ends here.
+   call elapsed_time(time_used, start)
+   write(*,*) "Elapsed time in milliseconds = ", time_used
 
    call output_students_list(output_file, citizens, "Петербуржцы:",  "append", citizen_count)
    call output_students_list(output_file, guests,   "Гости города:", "append", guest_count)

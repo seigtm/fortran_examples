@@ -35,9 +35,15 @@ program sort_students
    character(kind=CH_), parameter :: citizen = char(1055, CH_), guest = char(1057, CH_)  ! 'П', 'С'.
    type(student), pointer         :: group_list => Null(), guest_list => Null(), citizen_list => Null()
    integer(I_)                    :: guest_count = 0, citizen_count = 0
+   ! Variables for timing.
+   integer(I_) :: start(8)
+   real(R_)    :: time_used
 
    input_file  = "../data/input.txt"
    output_file = "output.txt"
+
+   ! Timing starts here.
+   call date_and_time(values=start)
 
    group_list => read_students_list(input_file)
 
@@ -49,6 +55,10 @@ program sort_students
 
       call sort_student_list(citizen_list, citizen_count)
       call sort_student_list(guest_list,   guest_count)
+
+      ! Timing ends here.
+      call elapsed_time(time_used, start)
+      write(*,*) "Elapsed time in milliseconds = ", time_used
 
       if(Associated(citizen_list)) &
          call output_students_list(output_file, citizen_list, "Петербуржцы:",  "append")

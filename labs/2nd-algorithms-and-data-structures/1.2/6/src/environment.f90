@@ -48,4 +48,23 @@ contains
       ! close (Out) ! Если не OUTPUT_UNIT.
    end subroutine Handle_IO_status
 
+   ! Subroutine to calculate elapsed time between two calls of date_and_time()
+   ! time_seconds  : variable for output, time in milliseconds
+   ! start         : integer(8) - input array from a previous date_and_time()-call
+   subroutine elapsed_time(time_mseconds, start)
+       ! variables
+       integer :: now(8), difference(8)
+       integer, intent(in) :: start(8)
+       real, intent(out) :: time_mseconds
+   
+       ! get current date and  time
+       call date_and_time(values=now)
+       ! call system_clock(now)
+   
+       ! calculate the difference in seconds
+       difference = now - start
+       ! 6 = minutes, 7 = seconds, 8 = milliseconds
+       time_mseconds = difference(6) * 60000 + difference(7) * 1000 + difference(8)
+   end subroutine elapsed_time
+
 end module environment

@@ -3,7 +3,7 @@ module group_io
    implicit none
 
    ! Определение параметров для работы с данными о студентах.
-   integer, parameter :: students_count = 18, surname_length = 15, initials_length = 5
+   integer, parameter :: students_count = 8500, surname_length = 15, initials_length = 5
    ! Структура данных для хранения данных о студенте.
    type student
       character(surname_length,  kind=CH_) :: surname      = ""
