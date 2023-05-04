@@ -1,5 +1,7 @@
 # Репозиторий для хранения примеров программ на Fortran
 
+Эта ветка отличается от master тем, что здесь я провожу замеры времени выполнения методов по обработке данных.
+
 ## Мои варианты по лабораторным работам по дисциплине "Алгоритмизация и программирование"
 
 > Располагаются по пути [`fortran_examples/labs/1st-algorithmization-and-programming/`](https://github.com/seigtm/fortran_examples/tree/master/labs/1st-algorithmization-and-programming/).
