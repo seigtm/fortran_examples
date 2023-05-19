@@ -2,7 +2,7 @@ module group_io
    use environment
    implicit none
 
-   integer, parameter :: students_count = 8500, surname_length = 15, initials_length = 5
+   integer, parameter :: students_count = 25500, surname_length = 15, initials_length = 5
 
 contains
    subroutine read_students_list(input_file, surnames, initials, genders, registrations, avg_marks)

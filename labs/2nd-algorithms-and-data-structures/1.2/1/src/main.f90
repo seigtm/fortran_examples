@@ -26,230 +26,229 @@
 !   Петрыкин И. И. М 4.32
 
 program sort_students
-   use environment
-
-   implicit none
-
-   integer, parameter               :: students_count = 8500, surname_length = 15, initials_length = 5
-   character(kind=CH_), parameter   :: citizen = char(1055, CH_)  ! 'П'
-
-   character(:), allocatable  :: input_file, output_file, format
-
-   character(surname_length, kind=CH_)                :: surname_tmp = "", surnames(students_count) = ""
-   character(surname_length, kind=CH_), allocatable   :: surnames_guests(:), surnames_citizens(:)
-
-   character(initials_length, kind=CH_)               :: initials_tmp = "", initials(students_count) = ""
-   character(initials_length, kind=CH_), allocatable  :: initials_guests(:), initials_citizens(:)
-
-   character(kind=CH_)              :: gender_tmp = "", genders(students_count) = ""
-   character(kind=CH_), allocatable :: genders_guests(:), genders_citizens(:)
-
-   character(kind=CH_)                             :: registrations(students_count) = ""
-
-   integer, allocatable                            :: position_guests(:), position_citizens(:)
-
-   real(R_)                                        :: avg_mark_tmp = 0, avg_marks(students_count) = 0
-   real(R_), allocatable                           :: avg_marks_citizens(:), avg_marks_guests(:)
-
-   logical, allocatable                            :: is_citizen(:), is_guest(:)
-   integer                                         :: citizen_count = 0, guest_count = 0
-
-   integer :: in, out, io, i, j
-   integer, parameter                              :: indexes(*) = [(i, i = 1, students_count)]
-   logical :: swap
-
-   ! Variables for timing.
-   integer(I_) :: start(8)
-   real(R_)    :: time_used
-
-   input_file = "../data/input.txt"
-   output_file = "output.txt"
-
-   ! Чтение списка класса: фамилии, инициалы, пол, прописка и средний балл.
-   open(file=input_file, encoding=E_, newunit=in)
-   format = '(4(a, 1x), f5.2)'
-   read(in, format, iostat=io) (surnames(i), initials(i), genders(i), registrations(i), avg_marks(i), i = 1, students_count)
-   close(in)
-   ! Обработка статуса чтения.
-   out = OUTPUT_UNIT
-   open(out, encoding=E_)
-   select case(io)
-    case(0)
-    case(IOSTAT_END)
-      write(out, *) "End of file has been reached while reading group list."
-    case(1:)
-      write(out, *) "Error while reading group list: ", io
-    case default
-      write(out, *) "Undetermined error has been reached while reading group list: ", io
-   end select
-
-   ! Вывод списка группы.
-   open(file=output_file, encoding=E_, newunit=out)
-   write(out, '(a)') "Исходный список:"
-   ! Пояснения к записи те же, что и к чтению.
-   write(out, format, iostat=IO) (surnames(i), initials(i), genders(i), registrations(i), avg_marks(i), i = 1, students_count)
-   close(out)
-   ! Обработка статуса записи.
-   out = OUTPUT_UNIT
-   open(out, encoding=E_)
-   select case(io)
-    case(0)
-    case(IOSTAT_END)
-      write(out, *) "End of file has been reached while writing class list."
-    case(1:)
-      write(out, *) "Error while writing class list: ", io
-    case default
-      write(out, *) "Undetermined error has been reached while writing class list: ", io
-   end select
-
-   ! Timing starts here.
-   call date_and_time(values=start)
-
-   ! Составление логической маски, соответствующей жителям.
-   is_citizen    = registrations == citizen
-   citizen_count = Count(is_citizen)
-   ! Получение массивов, связанных с жителями.
-   ! Использование массива номеров жителей в списке.
-   position_citizens = Pack(indexes, is_citizen)  ! == [1, 2, 3]
-   allocate(surnames_citizens(citizen_count), initials_citizens(citizen_count), &
-      genders_citizens(citizen_count), avg_marks_citizens(citizen_count))
-   do concurrent(i = 1:citizen_count)
-      ! Получение списков жителей.
-      surnames_citizens(i)  = surnames(position_citizens(i))
-      initials_citizens(i)  = initials(position_citizens(i))
-      genders_citizens(i)   = genders(position_citizens(i))
-      avg_marks_citizens(i) = avg_marks(position_citizens(i))
-   end do
-
-   ! Составление логической маски, соответствующей гостям.
-   is_guest    = .not. is_citizen
-   guest_count = students_count - citizen_count
-   ! Получение массивов, связанных с гостями.
-   ! Использование массива номеров гостей в списке.
-   position_guests = Pack(indexes, is_guest)  ! == [4, 5]
-   allocate(surnames_guests(guest_count), initials_guests(guest_count), &
-      genders_guests(guest_count), avg_marks_guests(guest_count))
-   do concurrent(i = 1:guest_count)
-      ! Получение списков гостей.
-      surnames_guests(i)  = surnames(position_guests(i))
-      initials_guests(i)  = initials(position_guests(i))
-      genders_guests(i)   = genders(position_guests(i))
-      avg_marks_guests(i) = avg_marks(position_guests(i))
-   end do
-
-   ! Сортировка списка жителей по среднему баллу методом пузырька.
-   do i = citizen_count, 2, -1
-      ! Просматриваем список с начала, ставя в конец менее успешного.
-      do j = 1, i-1
-         swap = .false.
-         ! Проверка на то, стоит ли менять учащихся местами.
-         if(avg_marks_citizens(j) < avg_marks_citizens(j+1)) then
-            Swap = .true.
-         else if(avg_marks_citizens(j) == avg_marks_citizens(j+1)) then
-            if (surnames_citizens(j) > surnames_citizens(j+1)) then
-               Swap = .true.
-            else if(surnames_citizens(j) == surnames_citizens(j+1) &
-               .and. initials_citizens(j) > initials_citizens(j+1)) then
-               Swap = .true.
-            end if
-         end if
-
-         if(swap) then
-            surname_tmp            = surnames_citizens(j+1)
-            surnames_citizens(j+1) = surnames_citizens(j)
-            surnames_citizens(j)   = surname_tmp
-
-            initials_tmp           = initials_citizens(j+1)
-            initials_citizens(j+1) = initials_citizens(j)
-            initials_citizens(j)   = initials_tmp
-
-            gender_tmp            = genders_citizens(j+1)
-            genders_citizens(j+1) = genders_citizens(j)
-            genders_citizens(j)   = gender_tmp
-
-            avg_mark_tmp            = avg_marks_citizens(j+1)
-            avg_marks_citizens(j+1) = avg_marks_citizens(j)
-            avg_marks_citizens(j)   = avg_mark_tmp
-         end if
-      end do
-   end do
-
-   ! Сортировка списка гостей по среднему баллу методом пузырька.
-   do i = guest_count, 2, -1
-      ! Просматриваем список с начала, ставя в конец менее успешного.
-      do j = 1, i-1
-         swap = .false.
-         ! Проверка на то, стоит ли менять учащихся местами.
-         if(avg_marks_guests(j) < avg_marks_guests(j+1)) then
-            Swap = .true.
-         else if(avg_marks_guests(j) == avg_marks_guests(j+1)) then
-            if (surnames_guests(j) > surnames_guests(j+1)) then
-               Swap = .true.
-            else if(surnames_guests(j) == surnames_guests(j+1) &
-               .and. initials_guests(j) > initials_guests(j+1)) then
-               Swap = .true.
-            end if
-         end if
-
-         if(swap) then
-            surname_tmp          = surnames_guests(j+1)
-            surnames_guests(j+1) = surnames_guests(j)
-            surnames_guests(j)   = surname_tmp
-
-            initials_tmp         = initials_guests(j+1)
-            initials_guests(j+1) = initials_guests(j)
-            initials_guests(j)   = initials_tmp
-
-            gender_tmp          = genders_guests(j+1)
-            genders_guests(j+1) = genders_guests(j)
-            genders_guests(j)   = gender_tmp
-
-            avg_mark_tmp          = avg_marks_guests(j+1)
-            avg_marks_guests(j+1) = avg_marks_guests(j)
-            avg_marks_guests(j)   = avg_mark_tmp
-         end if
-      end do
-   end do
-
-   ! Timing ends here.
-   call elapsed_time(time_used, start)
-   write(*,*) "Elapsed time in milliseconds = ", time_used
-
-   ! Вывод отсортированного списка жителей.
-   open(file=output_file, encoding=E_, position='append', newunit=out)
-   write(out, '(/a)') "Петербуржцы:"
-   write(out, format, iostat=io) &
-      (surnames_citizens(i), initials_citizens(i), genders_citizens(i), "П", avg_marks_citizens(i), i = 1, citizen_count)
-   close(out)
-   ! Обработка статуса записи.
-   out = OUTPUT_UNIT
-   open(out, encoding=E_)
-   select case(io)
-    case(0)
-    case(IOSTAT_END)
-      write(out, *) "End of file has been reached while writing sorted citizens list."
-    case(1:)
-      write(out, *) "Error while writing sorted citizens list: ", io
-    case default
-      write(out, *) "Undetermined error has been reached while writing sorted citizens list: ", io
-   end select
-
-   ! Вывод отсортированного списка гостей.
-   open(file=output_file, encoding=E_, position='append', newunit=out)
-   write(out, '(/a)') "Гости города:"
-   write(out, format, iostat=io) &
-      (surnames_guests(i), initials_guests(i), genders_guests(i), "Г", avg_marks_guests(i), i = 1, guest_count)
-   close(out)
-   ! Обработка статуса записи.
-   out = OUTPUT_UNIT
-   open(out, encoding=E_)
-   select case(io)
-    case(0)
-    case(IOSTAT_END)
-      write(out, *) "End of file has been reached while writing sorted guests list."
-    case(1:)
-      write(out, *) "Error while writing sorted guests list: ", io
-    case default
-      write(out, *) "Undetermined error has been reached while writing sorted guests list: ", io
-   end select
-end program sort_students
+    use environment
+ 
+    implicit none
+ 
+    integer, parameter               :: students_count = 25500, surname_length = 15, initials_length = 5
+    character(kind=CH_), parameter   :: citizen = char(1055, CH_), guest = char(1057, CH_)  ! 'П', 'С'.
+ 
+    character(:), allocatable  :: input_file, output_file, format
+ 
+    character(surname_length, kind=CH_)               :: surnames(students_count) = ""
+    character(surname_length, kind=CH_),  allocatable :: surnames_guests(:), surnames_citizens(:)
+    character(initials_length, kind=CH_)              :: initials(students_count) = ""
+    character(initials_length, kind=CH_), allocatable :: initials_guests(:), initials_citizens(:)
+    character(kind=CH_)                               :: genders(students_count) = ""
+    character(kind=CH_),                  allocatable :: genders_guests(:), genders_citizens(:)
+    character(kind=CH_)                               :: registrations(students_count) = ""
+    real(R_)                                          :: avg_marks(students_count) = 0
+    real(R_), allocatable                             :: avg_marks_citizens(:), avg_marks_guests(:)
+    integer                                           :: in, out, io, i
+ 
+    ! Variables for timing.
+    integer(I_) :: start(8)
+    real(R_)    :: time_used
+ 
+    input_file = "../data/input.txt"
+    output_file = "output.txt"
+ 
+    ! Чтение списка класса: фамилии, инициалы, пол, прописка и средний балл.
+    open(file=input_file, encoding=E_, newunit=in)
+    format = '(4(a, 1x), f5.2)'
+    read(in, format, iostat=io) (surnames(i), initials(i), genders(i), registrations(i), avg_marks(i), i = 1, students_count)
+    close(in)
+    ! Обработка статуса чтения.
+    out = OUTPUT_UNIT
+    open(out, encoding=E_)
+    select case(io)
+     case(0)
+     case(IOSTAT_END)
+       write(out, *) "End of file has been reached while reading group list."
+     case(1:)
+       write(out, *) "Error while reading group list: ", io
+     case default
+       write(out, *) "Undetermined error has been reached while reading group list: ", io
+    end select
+ 
+    ! Вывод списка группы.
+    open(file=output_file, encoding=E_, newunit=out)
+    write(out, '(a)') "Исходный список:"
+    ! Пояснения к записи те же, что и к чтению.
+    write(out, format, iostat=IO) (surnames(i), initials(i), genders(i), registrations(i), avg_marks(i), i = 1, students_count)
+    close(out)
+    ! Обработка статуса записи.
+    out = OUTPUT_UNIT
+    open(out, encoding=E_)
+    select case(io)
+     case(0)
+     case(IOSTAT_END)
+       write(out, *) "End of file has been reached while writing class list."
+     case(1:)
+       write(out, *) "Error while writing class list: ", io
+     case default
+       write(out, *) "Undetermined error has been reached while writing class list: ", io
+    end select
+ 
+    ! Timing starts here.
+    call date_and_time(values=start)
+ 
+    ! Получение списков жителей и гостей Санкт-Петербурга.
+    call get_list_by_registration(surnames, initials, genders, registrations, avg_marks, &
+       surnames_citizens, initials_citizens, genders_citizens, avg_marks_citizens, &
+       citizen)
+    call get_list_by_registration(surnames, initials, genders, registrations, avg_marks, &
+       surnames_guests, initials_guests, genders_guests, avg_marks_guests, &
+       guest)
+    
+    ! Сортировка списов.
+    call sort_students_list(surnames_citizens, initials_citizens, genders_citizens, avg_marks_citizens)
+    call sort_students_list(surnames_guests, initials_guests, genders_guests, avg_marks_guests)
+ 
+    ! Timing ends here.
+    call elapsed_time(time_used, start)
+    write(*,*) "Elapsed time in milliseconds = ", time_used
+ 
+    ! Вывод отсортированного списка жителей.
+    open(file=output_file, encoding=E_, position='append', newunit=out)
+    write(out, '(/a)') "Петербуржцы:"
+    write(out, format, iostat=io) &
+       (surnames_citizens(i), initials_citizens(i), genders_citizens(i), citizen, avg_marks_citizens(i), &
+            i = 1, size(avg_marks_citizens))
+    close(out)
+    ! Обработка статуса записи.
+    out = OUTPUT_UNIT
+    open(out, encoding=E_)
+    select case(io)
+     case(0)
+     case(IOSTAT_END)
+       write(out, *) "End of file has been reached while writing sorted citizens list."
+     case(1:)
+       write(out, *) "Error while writing sorted citizens list: ", io
+     case default
+       write(out, *) "Undetermined error has been reached while writing sorted citizens list: ", io
+    end select
+ 
+    ! Вывод отсортированного списка гостей.
+    open(file=output_file, encoding=E_, position='append', newunit=out)
+    write(out, '(/a)') "Гости города:"
+    write(out, format, iostat=io) &
+       (surnames_guests(i), initials_guests(i), genders_guests(i), guest, avg_marks_guests(i), &
+            i = 1, size(avg_marks_guests))
+    close(out)
+    ! Обработка статуса записи.
+    out = OUTPUT_UNIT
+    open(out, encoding=E_)
+    select case(io)
+     case(0)
+     case(IOSTAT_END)
+       write(out, *) "End of file has been reached while writing sorted guests list."
+     case(1:)
+       write(out, *) "Error while writing sorted guests list: ", io
+     case default
+       write(out, *) "Undetermined error has been reached while writing sorted guests list: ", io
+    end select
+ 
+ contains
+    pure subroutine get_list_by_registration(surnames, initials, genders, registrations, avg_marks, &
+       surnames_registration, initials_registration, genders_registration, avg_marks_registration, registration)
+       character(surname_length,  kind=CH_), intent(in) :: surnames(:)
+       character(initials_length, kind=CH_), intent(in) :: initials(:)
+       character(kind=CH_),                  intent(in) :: genders(:)
+       character(kind=CH_),                  intent(in) :: registrations(:)
+       real(R_),                             intent(in) :: avg_marks(:)
+       character(kind=CH_),                  intent(in) :: registration
+ 
+       character(surname_length,  kind=CH_), allocatable, intent(out) :: surnames_registration(:)
+       character(initials_length, kind=CH_), allocatable, intent(out) :: initials_registration(:)
+       character(kind=CH_),                  allocatable, intent(out) :: genders_registration(:)
+       real(R_),                             allocatable, intent(out) :: avg_marks_registration(:)
+ 
+       logical, allocatable :: is_registration(:)
+       integer, allocatable :: position_registration(:)
+       integer(I_)          :: registration_count, i
+       integer, parameter   :: indexes(*) = [(i, i = 1, students_count)]
+ 
+       is_registration = registrations == registration
+       registration_count = Count(is_registration)
+ 
+       position_registration = Pack(indexes, is_registration)
+       allocate(surnames_registration(registration_count), &
+          initials_registration(registration_count), &
+          genders_registration(registration_count), &
+          avg_marks_registration(registration_count))
+ 
+       do concurrent(i = 1:registration_count)
+          surnames_registration(i)  = surnames(position_registration(i))
+          initials_registration(i)  = initials(position_registration(i))
+          genders_registration(i)   = genders(position_registration(i))
+          avg_marks_registration(i) = avg_marks(i)
+       end do
+    end subroutine get_list_by_registration
+ 
+    pure subroutine sort_students_list(surnames, initials, genders, avg_marks)
+       character(surname_length,  kind=CH_), intent(inout) :: surnames(:)
+       character(initials_length, kind=CH_), intent(inout) :: initials(:)
+       character(kind=CH_),                  intent(inout) :: genders(:)
+       real(R_),                             intent(inout) :: avg_marks(:)
+ 
+       integer(I_) :: i, j
+ 
+       do i = Size(avg_marks), 2, -1
+          do j = 1, i-1
+             if(should_swap(avg_marks, surnames, initials, j)) &
+                call swap(surnames, initials, genders, avg_marks, j)
+          end do
+       end do
+    end subroutine sort_students_list
+ 
+    pure logical function should_swap(avg_marks, surnames, initials, j)
+       real(R_),                             intent(in) :: avg_marks(:)
+       character(surname_length,  kind=CH_), intent(in) :: surnames(:)
+       character(initials_length, kind=CH_), intent(in) :: initials(:)
+       integer(I_),                          intent(in) :: j
+ 
+       should_swap = .false.
+       ! Проверка на то, стоит ли менять учащихся местами.
+       if(avg_marks(j) < avg_marks(j+1)) then
+          should_swap = .true.
+       else if(avg_marks(j) == avg_marks(j+1)) then
+          if(surnames(j) > surnames(j+1)) then
+             should_swap = .true.
+          else if(surnames(j) == surnames(j+1) &
+             .and. initials(j) > initials(j+1)) then
+             should_swap = .true.
+          end if
+       end if
+    end function should_swap
+ 
+    pure subroutine swap(surnames, initials, genders, avg_marks, j)
+       character(surname_length, kind=CH_),  intent(inout) :: surnames(:)
+       character(initials_length, kind=CH_), intent(inout) :: initials(:)
+       character(kind=CH_),                  intent(inout) :: genders(:)
+       real(R_),                             intent(inout) :: avg_marks(:)
+       integer(I_),                          intent(in)    :: j
+ 
+       character(surname_length,  kind=CH_) :: surname_tmp
+       character(initials_length, kind=CH_) :: initials_tmp
+       character(kind=CH_)                  :: gender_tmp
+       real(R_)                             :: avg_mark_tmp
+ 
+       surname_tmp    = surnames(j+1)
+       surnames(j+1)  = surnames(j)
+       surnames(j)    = surname_tmp
+ 
+       initials_tmp   = initials(j+1)
+       initials(j+1)  = initials(j)
+       initials(j)    = initials_tmp
+ 
+       gender_tmp     = genders(j+1)
+       genders(j+1)   = genders(j)
+       genders(j)     = gender_tmp
+ 
+       avg_mark_tmp   = avg_marks(j+1)
+       avg_marks(j+1) = avg_marks(j)
+       avg_marks(j)   = avg_mark_tmp
+    end subroutine swap
+ end program sort_students
+ 
